@@ -1,0 +1,3 @@
+kobis:
+  api:
+    url: http://kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json
