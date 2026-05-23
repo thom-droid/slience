@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.unexpected.slience.movie.domain.MovieEntity;
+import org.unexpected.slience.movie.domain.entity.MovieEntity;
 import org.unexpected.slience.theater.domain.ScreenEntity;
 
 import java.time.LocalDateTime;
@@ -20,10 +20,12 @@ public class ScheduleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "movies_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movie_id")
     private MovieEntity movie;
 
-    @OneToOne(mappedBy = "screens_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "screen_id")
     private ScreenEntity screen;
 
     @NotNull

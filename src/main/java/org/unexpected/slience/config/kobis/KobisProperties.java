@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Setter
-public class KobisProperty {
+public class KobisProperties {
 
     private Api api;
 
