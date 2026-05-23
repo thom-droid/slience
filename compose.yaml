@@ -1,0 +1,17 @@
+services:
+  pg-index-lab:
+    image: postgres:16
+    container_name: pg-silence-movie
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: silence-movie
+      POSTGRES_USER: silence_user
+      POSTGRES_PASSWORD: silence_pwd
+    ports:
+      - "5435:5432"
+    volumes:
+      - pg_silence_movie_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+
+volumes:
+  pg_silence_movie_data:
