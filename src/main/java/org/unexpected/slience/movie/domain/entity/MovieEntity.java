@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.unexpected.slience.schedule.domain.ScheduleEntity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +16,8 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "movies",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"movie_cd"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"movie_cd"}),
+        indexes = @Index(columnList = "movie_cd", name="movie_idx_movie_cd")
 )
 public class MovieEntity {
 
@@ -22,24 +25,32 @@ public class MovieEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "movie_cd")
     private String movieCd;
 
+    @Column(name = "movie_nm")
     private String movieNm;
 
+    @Column(name = "movie_nm_en")
     private String movieNmEn;
 
-    private String openDt;
+    @Column(name = "open_dt")
+    private LocalDate openDt;
 
+    @Column(name = "prdt_stat_nm")
     private String prdtStatNm;
 
+    @Column(name = "type_nm")
     private String typeNm;
 
+    @Column(name = "rep_nation_nm")
     private String repNationNm;
 
+    @Column(name = "rep_genre_nm")
     private String repGenreNm;
 
     @Builder.Default
-    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<MovieDirectorEntity> directors = new ArrayList<>();
 
     @Builder.Default

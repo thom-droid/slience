@@ -6,7 +6,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@Table(name="movie_directors")
+@Table(name = "movie_directors",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"movie_id", "director_id"})
+)
 @Entity
 public class MovieDirectorEntity {
 

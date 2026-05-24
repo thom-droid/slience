@@ -1,9 +1,9 @@
 package org.unexpected.slience.movie.mapper;
 
-import org.unexpected.slience.movie.domain.entity.DirectorTempEntity;
-import org.unexpected.slience.movie.domain.entity.MovieTempEntity;
-import org.unexpected.slience.movie.dto.kobis.KobisDirectorDto;
-import org.unexpected.slience.movie.dto.kobis.KobisMovieDto;
+import org.unexpected.slience.kobis.domain.entity.DirectorTempEntity;
+import org.unexpected.slience.kobis.domain.entity.MovieTempEntity;
+import org.unexpected.slience.kobis.api.response.KobisDirectorDto;
+import org.unexpected.slience.kobis.api.response.KobisMovieDto;
 
 public class KobisMovieDtoMapper {
 

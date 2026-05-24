@@ -8,13 +8,16 @@ import java.util.List;
 
 @Setter
 @Getter
-@Table(name = "directors")
+@Table(name = "directors"
+        , uniqueConstraints = @UniqueConstraint(columnNames = {"name"})
+)
 @Entity
 public class DirectorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name")
     private String name;
 
     @OneToMany(mappedBy = "director", fetch = FetchType.LAZY)
