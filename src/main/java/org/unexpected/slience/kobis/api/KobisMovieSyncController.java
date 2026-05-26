@@ -20,13 +20,10 @@ public class KobisMovieSyncController {
 
     @GetMapping("/sync")
     public void sync() {
-
         KobisMovieSearchRequest req = KobisMovieSearchRequest.of("2026", "2026", 1, 100);
         KobisMovieListResponse kobisMovieListResponse = kobisMovieClient.fetchMovies(req);
-        System.out.println("kobisMovieListResponse = " + kobisMovieListResponse);
 
         SyncHistoryEntity sync = kobisMovieSyncFacade.sync(kobisMovieListResponse);
-        System.out.println("sync = " + sync);
     }
 
 }
