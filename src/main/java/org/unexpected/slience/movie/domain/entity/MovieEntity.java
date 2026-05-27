@@ -40,6 +40,10 @@ public class MovieEntity {
     @Column(name = "prdt_stat_nm")
     private String prdtStatNm;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @Column(name = "type_nm")
     private String typeNm;
 

@@ -13,7 +13,7 @@ import lombok.Setter;
         uniqueConstraints = {
         @UniqueConstraint(
                 name = "uk_seat",
-                columnNames = {"screens_id", "row", "seat_number"}
+                columnNames = {"screens_id", "seat_row", "seat_number"}
         )
     }
 )
@@ -28,7 +28,7 @@ public class SeatEntity {
     private ScreenEntity screen;
 
     @Column(nullable = false)
-    private String row;
+    private String seatRow;
 
     @Column(nullable = false)
     private String seatNumber;

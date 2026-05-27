@@ -21,6 +21,9 @@ public class ScreenEntity {
 
     private String name;
 
+    private int totalRows;
+    private int totalCols;
+
     @OneToMany(mappedBy = "screen", orphanRemoval = true)
     private List<SeatEntity> seats = new ArrayList<>();
 
