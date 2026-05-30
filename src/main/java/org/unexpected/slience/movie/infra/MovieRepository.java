@@ -1,11 +1,13 @@
 package org.unexpected.slience.movie.infra;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.unexpected.slience.movie.domain.entity.MovieEntity;
+import org.unexpected.slience.movie.domain.entity.Status;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -60,12 +62,22 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
     int mergeMovieDirectors(@Param(value = "batchId") Long batchId);
 
     @Query(value = """
-        select m
-        from MovieEntity m
-        where (:status is null or m.status = :status)
-                AND m.openDt >= :startDate AND m.openDt < :endDate
-        """)
-    List<MovieEntity> findMoviesByStatusAndDate(@Param("status") String status,
+            select m
+            from MovieEntity m
+            where (:status is null or m.status = :status)
+            and m.openDt >= :startDate
+            and m.openDt < :endDate
+            """)
+    List<MovieEntity> findMoviesByStatusAndDate(@Param("status") Status status,
                                                 @Param("startDate") LocalDate startDate,
-                                                @Param("endDate") LocalDate endDate);
+                                                @Param("endDate") LocalDate endDate,
+                                                Pageable pageRequest);
+
+    @Query(value = """
+            select m
+            from MovieEntity m
+            where (:status is null or m.status = :status)
+            """)
+    List<MovieEntity> findMoviesByStatus(@Param("status") Status status,
+                                         Pageable pageRequest);
 }

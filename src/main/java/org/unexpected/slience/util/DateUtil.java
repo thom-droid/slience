@@ -11,4 +11,8 @@ public class DateUtil {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return LocalDate.parse(yyyyMMddStr, formatter);
     }
+
+    public static String parseLocalDateToString(LocalDate localDate) {
+        return localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
 }
