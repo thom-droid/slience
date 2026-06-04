@@ -1,4 +1,4 @@
-package org.unexpected.slience.sync.domain;
+package org.unexpected.slience.batch.domain;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,22 +7,22 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class SyncHistory {
+public class BatchHistory {
     private Long batchId;
-    private String syncType;
+    private String batchType;
     private LocalDateTime startedAt;
     private LocalDateTime finishedAt;
     private String status;
-    private Integer fetchedCount;
+    private Integer successCount;
     private Integer failedCount;
     private String errorMessage;
 
     public void complete() {
-        this.status = SyncStatus.COMPLETED.name();
+        this.status = BatchStatus.COMPLETED.name();
     }
 
     public void fail(String message) {
-        this.status = SyncStatus.FAILED.name();
+        this.status = BatchStatus.FAILED.name();
         this.errorMessage = message;
     }
 }

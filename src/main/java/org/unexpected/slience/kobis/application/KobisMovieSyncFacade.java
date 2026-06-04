@@ -4,18 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
+import org.unexpected.slience.batch.application.BatchHistoryFactory;
+import org.unexpected.slience.batch.application.BatchHistoryService;
+import org.unexpected.slience.batch.application.exception.BatchFailedException;
+import org.unexpected.slience.batch.domain.BatchHistoryEntity;
+import org.unexpected.slience.batch.domain.BatchStatus;
+import org.unexpected.slience.batch.domain.BatchType;
 import org.unexpected.slience.kobis.api.request.KobisMovieSearchRequest;
 import org.unexpected.slience.kobis.api.request.MovieTempUpdateDto;
 import org.unexpected.slience.kobis.api.response.KobisMovieListResponse;
-import org.unexpected.slience.kobis.infra.MovieTempRepository;
-import org.unexpected.slience.movie.application.MovieQueryService;
 import org.unexpected.slience.schedule.application.ScheduleCommandService;
-import org.unexpected.slience.sync.application.SyncHistoryFactory;
-import org.unexpected.slience.sync.application.SyncHistoryService;
-import org.unexpected.slience.sync.application.exception.SyncFailedException;
-import org.unexpected.slience.sync.domain.SyncHistoryEntity;
-import org.unexpected.slience.sync.domain.SyncStatus;
-import org.unexpected.slience.sync.domain.SyncType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,15 +25,15 @@ public class KobisMovieSyncFacade {
 
     private final MovieTempCommandService kobisMovieCommandService;
     private final ScheduleCommandService scheduleCommandService;
-    private final SyncHistoryFactory syncHistoryFactory;
+    private final BatchHistoryFactory syncHistoryFactory;
     private final KobisMovieClient kobisMovieClient;
     private final MovieTempQueryService movieTempQueryService;
     private final MovieTempCommandService movieTempCommandService;
 
-    public SyncHistoryEntity sync() throws SyncFailedException {
+    public void sync() throws BatchFailedException {
 
-        SyncHistoryService syncHistoryService = syncHistoryFactory.getInstance(SyncType.MOVIE);
-        SyncHistoryEntity syncHistoryEntity = syncHistoryService.getOrCreateSynHistory();
+        BatchHistoryService syncHistoryService = syncHistoryFactory.getInstance(BatchType.MOVIE);
+        BatchHistoryEntity syncHistoryEntity = syncHistoryService.getOrCreateSynHistory();
         Long batchId = syncHistoryEntity.getBatchId();
 
         log.info("KobisMovieSyncFacade.sync started");
@@ -80,19 +78,16 @@ public class KobisMovieSyncFacade {
             scheduleCommandService.syncSchedules();
             log.info("schedule synced");
 
-            syncHistoryEntity.setFetchedCount(upsert);
-            syncHistoryEntity.setStatus(SyncStatus.COMPLETED.name());
+            syncHistoryEntity.setSuccessCount(upsert);
+            syncHistoryEntity.setStatus(BatchStatus.COMPLETED.name());
             syncHistoryEntity.setFinishedAt(LocalDateTime.now());
             syncHistoryService.saveSynHistory(syncHistoryEntity);
             log.info("KobisMovieSyncFacade.sync finished");
 
-            return syncHistoryEntity;
-
         } catch (Exception e) {
-            syncHistoryEntity.setStatus(SyncStatus.FAILED.name());
+            syncHistoryEntity.setStatus(BatchStatus.FAILED.name());
             syncHistoryEntity.setErrorMessage(e.getMessage());
             syncHistoryService.saveSynHistory(syncHistoryEntity);
-            return syncHistoryEntity;
         }
     }
 }

@@ -1,4 +1,4 @@
-package org.unexpected.slience.sync.domain;
+package org.unexpected.slience.batch.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,18 +8,18 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Table(name = "sync_history")
+@Table(name = "batch_history")
 @Entity
-public class SyncHistoryEntity {
+public class BatchHistoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long batchId;
-    private String syncType;
+    private String batchType;
     private LocalDateTime startedAt;
     private LocalDateTime finishedAt;
     private String status;
-    private Integer fetchedCount;
+    private Integer successCount;
     private Integer failedCount;
     @Column(name = "error_message", length = Integer.MAX_VALUE)
     private String errorMessage;

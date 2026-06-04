@@ -8,8 +8,7 @@ import org.unexpected.slience.kobis.api.request.MovieTempUpdateDto;
 import org.unexpected.slience.kobis.infra.MovieTempBulkRepository;
 import org.unexpected.slience.movie.infra.DirectorRepository;
 import org.unexpected.slience.movie.infra.MovieRepository;
-import org.unexpected.slience.sync.application.SyncHistoryFactory;
-import org.unexpected.slience.sync.domain.SyncHistoryEntity;
+import org.unexpected.slience.batch.application.BatchHistoryFactory;
 import org.unexpected.slience.kobis.domain.entity.DirectorTempEntity;
 import org.unexpected.slience.kobis.domain.entity.MovieTempEntity;
 import org.unexpected.slience.kobis.api.response.KobisMovieDto;
@@ -28,7 +27,7 @@ public class MovieTempCommandService {
     private final MovieTempRepository movieTempRepository;
     private final DirectorTempRepository directorTempRepository;
     private final MovieRepository movieRepository;
-    private final SyncHistoryFactory syncHistoryFactory;
+    private final BatchHistoryFactory syncHistoryFactory;
     private final DirectorRepository directorRepository;
     private final MovieTempBulkRepository movieTempBulkRepository;
 
