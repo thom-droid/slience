@@ -6,6 +6,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.unexpected.slience.config.kobis.KobisProperties;
 import org.unexpected.slience.kobis.api.request.KobisMovieSearchRequest;
+import org.unexpected.slience.kobis.api.response.KobisMovieDetailDto;
 import org.unexpected.slience.kobis.api.response.KobisMovieDto;
 import org.unexpected.slience.kobis.api.response.KobisMovieListResponse;
 import org.unexpected.slience.kobis.api.response.KobisMovieListResult;
@@ -15,33 +16,39 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class KobisMovieClient {
-
     private final WebClient webClient;
-
     private final KobisProperties kobisProperties;
 
     // TODO:: 대용량 처리 (~ 100k)
     public KobisMovieListResponse fetchMovies(KobisMovieSearchRequest request) {
         MultiValueMap<String, String> multiValueMap = KobisMovieSearchRequest.toMultiValueMap(request);
-        KobisMovieListResponse response = webClient.get()
+        KobisProperties.Api api = kobisProperties.api();
+        return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("http")
-                        .host("kobis.or.kr")
-                        .path("/kobisopenapi/webservice/rest/movie/searchMovieList.json")
-                        .queryParam("key", kobisProperties.getApi().getKey())
+                        .scheme(api.scheme())
+                        .host(api.host())
+                        .path(api.path().list())
+                        .queryParam("key", api.key())
                         .queryParams(multiValueMap)
                         .build())
                 .retrieve()
                 .bodyToMono(KobisMovieListResponse.class)
                 .block();
+    }
 
-        if (response != null && response.getMovieListResult() != null) {
-            KobisMovieListResult movieListResult = response.getMovieListResult();
-            List<KobisMovieDto> filtered = movieListResult.getMovieList().stream().filter(m -> !KobisAdultGenreFilter.shouldFilter(m.getRepGenreNm())).toList();
-            movieListResult.setMovieList(filtered);
-            movieListResult.setTotCnt(filtered.size());
-        }
-
-        return response;
+    public KobisMovieDetailDto fetchMovieDetail(String movieCd) {
+        KobisProperties.Api api = kobisProperties.api();
+        KobisMovieDetailDto block = webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme(api.scheme())
+                        .host(api.host())
+                        .path(api.path().detail())
+                        .queryParam("key", api.key())
+                        .queryParam("movieCd", movieCd)
+                        .build())
+                .retrieve()
+                .bodyToMono(KobisMovieDetailDto.class)
+                .block();
+        return block;
     }
 }

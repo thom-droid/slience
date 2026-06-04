@@ -1,4 +1,7 @@
 spring:
+  config:
+    import:
+      - classpath:application-kobis.yaml
   application:
     name: silence
   datasource:
@@ -16,7 +19,7 @@ spring:
     defer-datasource-initialization: true
   sql:
     init:
-      mode: embedded
+      mode: never
       data-locations: classpath*:init/*.sql
 logging:
   level:

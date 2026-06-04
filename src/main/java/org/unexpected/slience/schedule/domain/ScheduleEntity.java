@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.unexpected.slience.movie.domain.entity.MovieEntity;
 import org.unexpected.slience.theater.domain.ScreenEntity;
 
@@ -32,5 +33,9 @@ public class ScheduleEntity {
     private LocalDateTime startTime;
     @NotNull
     private LocalDateTime endTime;
+
+    @Column(name = "booked_out")
+    @ColumnDefault("false")
+    private boolean bookedOut = false;
 
 }

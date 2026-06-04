@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.unexpected.slience.kobis.api.request.MovieTempUpdateDto;
+import org.unexpected.slience.kobis.infra.MovieTempBulkRepository;
 import org.unexpected.slience.movie.infra.DirectorRepository;
 import org.unexpected.slience.movie.infra.MovieRepository;
 import org.unexpected.slience.sync.application.SyncHistoryFactory;
-import org.unexpected.slience.sync.application.SyncHistoryService;
 import org.unexpected.slience.sync.domain.SyncHistoryEntity;
-import org.unexpected.slience.sync.domain.SyncType;
 import org.unexpected.slience.kobis.domain.entity.DirectorTempEntity;
 import org.unexpected.slience.kobis.domain.entity.MovieTempEntity;
 import org.unexpected.slience.kobis.api.response.KobisMovieDto;
@@ -23,20 +23,17 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class KobisMovieCommandService {
+public class MovieTempCommandService {
 
     private final MovieTempRepository movieTempRepository;
     private final DirectorTempRepository directorTempRepository;
     private final MovieRepository movieRepository;
     private final SyncHistoryFactory syncHistoryFactory;
     private final DirectorRepository directorRepository;
+    private final MovieTempBulkRepository movieTempBulkRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SyncHistoryEntity insertKobisMovie(KobisMovieListResponse movieListResponse) {
-
-        SyncHistoryService syncHistoryService = syncHistoryFactory.getInstance(SyncType.MOVIE);
-        SyncHistoryEntity syncHistory = syncHistoryService.getOrCreateSynHistory();
-        Long batchId = syncHistory.getBatchId();
+    public int insertKobisMovie(Long batchId, KobisMovieListResponse movieListResponse) {
 
         List<KobisMovieDto> movieList = movieListResponse.getMovieListResult().getMovieList();
 
@@ -65,25 +62,28 @@ public class KobisMovieCommandService {
         List<MovieTempEntity> inserted = movieTempRepository.saveAll(movieTempEntities);
         directorTempRepository.saveAll(directorTempEntities);
 
-        return syncHistory;
+        return inserted.size();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SyncHistoryEntity upsertKobisMovie(SyncHistoryEntity syncHistoryEntity) {
-        Long batchId1 = syncHistoryEntity.getBatchId();
-        int inserted = movieRepository.mergeMovies(batchId1);
-        directorRepository.mergeDirector(batchId1);
-        movieRepository.mergeMovieDirectors(batchId1);
-        syncHistoryEntity.setFetchedCount(inserted);
-
-        return syncHistoryEntity;
+    public int upsertKobisMovie(Long batchId) {
+        int inserted = movieRepository.mergeMovies(batchId);
+        directorRepository.mergeDirector(batchId);
+        movieRepository.mergeMovieDirectors(batchId);
+        return inserted;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public SyncHistoryEntity cleanup(SyncHistoryEntity syncHistoryEntity) {
-        movieTempRepository.deleteAllByBatchId(syncHistoryEntity.getBatchId());
-        directorTempRepository.deleteAllByBatchId(syncHistoryEntity.getBatchId());
+    public int cleanup(Long batchId) {
+        int i = movieTempRepository.deleteByBatchId(batchId);
+        directorTempRepository.deleteByBatchId(batchId);
 
-        return syncHistoryEntity;
+        return i;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public int updateMovieDetails(Long batchId, List<MovieTempUpdateDto> updates) {
+        int i = movieTempBulkRepository.bulkUpdate(batchId, updates);
+        return i;
     }
 }

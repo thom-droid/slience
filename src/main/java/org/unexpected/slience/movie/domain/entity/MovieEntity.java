@@ -53,6 +53,9 @@ public class MovieEntity {
     @Column(name = "rep_genre_nm")
     private String repGenreNm;
 
+    @Column(name = "adult_yn")
+    private boolean adultYn;
+
     @Builder.Default
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<MovieDirectorEntity> directors = new ArrayList<>();

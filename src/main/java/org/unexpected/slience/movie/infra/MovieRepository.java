@@ -1,7 +1,9 @@
 package org.unexpected.slience.movie.infra;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,13 +20,13 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
     @Modifying
     @Query(value = """
                 INSERT INTO movies (movie_cd, movie_nm, movie_nm_en, open_dt,
-                                    prdt_stat_nm, status, rep_genre_nm, rep_nation_nm, type_nm)
+                                    prdt_stat_nm, status, rep_genre_nm, rep_nation_nm, type_nm, adult_yn)
                 SELECT t.movie_cd, t.movie_nm, t.movie_nm_en, TO_DATE(t.open_dt, 'YYYYMMDD'),
                        t.prdt_stat_nm, CASE WHEN TO_DATE(t.open_dt, 'YYYYMMDD') + INTERVAL '30 DAYS' < CURRENT_DATE
                                             THEN 'CLOSED'
                                             ELSE s.status
                                        END as status,
-                       t.rep_genre_nm, t.rep_nation_nm, t.type_nm
+                       t.rep_genre_nm, t.rep_nation_nm, t.type_nm, t.adult_yn
                 FROM movie_temps t
                 LEFT JOIN (SELECT 'PLAYING' as status, '개봉' as prdt_stat_nm
                                 UNION ALL
@@ -32,6 +34,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
                                 UNION ALL
                             SELECT 'CLOSED', '상영종료') s ON t.prdt_stat_nm = s.PRDT_STAT_NM
                 WHERE t.batch_id = :batchId
+                AND   t.restricted_yn = false
             
                 ON CONFLICT (movie_cd)
                 DO UPDATE SET
@@ -80,4 +83,10 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
             """)
     List<MovieEntity> findMoviesByStatus(@Param("status") Status status,
                                          Pageable pageRequest);
+
+//    @Lock(value = LockModeType.PESSIMISTIC_READ)
+//    @Query(value = """
+//
+//""")
+
 }

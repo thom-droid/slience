@@ -1,13 +1,12 @@
 INSERT INTO schedules (movie_id, screen_id, start_time, end_time)
 SELECT
     m.id,
-    ((CAST(m.movie_cd AS BIGINT) % 9) + 1) AS screen_id,
+    (floor(random() * 9) + 1)::int AS screen_id,
     schedule_time AS start_time,
     schedule_time + INTERVAL '2 hours' AS end_time
 FROM (
     SELECT
         id,
-        movie_cd,
         open_dt,
         (
             CASE

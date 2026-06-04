@@ -1,3 +1,7 @@
 kobis:
   api:
-    url: http://kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json
+    scheme: http
+    host: kobis.or.kr
+    path:
+      list: /kobisopenapi/webservice/rest/movie/searchMovieList.json
+      detail: /kobisopenapi/webservice/rest/movie/searchMovieInfo.json

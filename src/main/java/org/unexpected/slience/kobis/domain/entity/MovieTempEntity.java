@@ -31,4 +31,7 @@ public class MovieTempEntity {
     private String repNationNm;
 
     private String repGenreNm;
+    private String watchGradeNm;
+    private boolean adultYn;
+    private boolean restrictedYn;
 }
