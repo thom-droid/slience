@@ -16,7 +16,7 @@ public class BatchHistoryFactory {
     public BatchHistoryFactory(List<BatchHistoryService> services) {
 
         for (BatchHistoryService service : services) {
-            map.put(service.syncType(), service);
+            map.put(service.batchType(), service);
         }
     }
     public BatchHistoryService getInstance(BatchType type) {

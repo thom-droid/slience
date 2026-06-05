@@ -32,9 +32,9 @@ public class KobisMovieSyncFacade {
 
     public void sync() throws BatchFailedException {
 
-        BatchHistoryService syncHistoryService = syncHistoryFactory.getInstance(BatchType.MOVIE);
-        BatchHistoryEntity syncHistoryEntity = syncHistoryService.getOrCreateSynHistory();
-        Long batchId = syncHistoryEntity.getBatchId();
+        BatchHistoryService batchHistoryService = syncHistoryFactory.getInstance(BatchType.MOVIE);
+        BatchHistoryEntity batchHistory = batchHistoryService.getOrCreateBatchHistory();
+        Long batchId = batchHistory.getBatchId();
 
         log.info("KobisMovieSyncFacade.sync started");
 
@@ -53,6 +53,10 @@ public class KobisMovieSyncFacade {
             List<String> newMovieCds = movieTempQueryService.findNewMoviesByBatchId(batchId);
             stopWatch.stop();
             log.info("inserted movie temp :: {}. task {} took {} sec", newMovieCds.size(), stopWatch.lastTaskInfo().getTaskName(), stopWatch.lastTaskInfo().getTimeSeconds());
+
+            if (newMovieCds.isEmpty()) {
+
+            }
 
             stopWatch.start("fetch movie details");
             List<MovieTempUpdateDto> bulkUpdates = newMovieCds.stream()
@@ -78,16 +82,16 @@ public class KobisMovieSyncFacade {
             scheduleCommandService.syncSchedules();
             log.info("schedule synced");
 
-            syncHistoryEntity.setSuccessCount(upsert);
-            syncHistoryEntity.setStatus(BatchStatus.COMPLETED.name());
-            syncHistoryEntity.setFinishedAt(LocalDateTime.now());
-            syncHistoryService.saveSynHistory(syncHistoryEntity);
+            batchHistory.setSuccessCount(upsert);
+            batchHistory.setStatus(BatchStatus.COMPLETED.name());
+            batchHistory.setFinishedAt(LocalDateTime.now());
+            batchHistoryService.save(batchHistory);
             log.info("KobisMovieSyncFacade.sync finished");
 
         } catch (Exception e) {
-            syncHistoryEntity.setStatus(BatchStatus.FAILED.name());
-            syncHistoryEntity.setErrorMessage(e.getMessage());
-            syncHistoryService.saveSynHistory(syncHistoryEntity);
+            batchHistory.setStatus(BatchStatus.FAILED.name());
+            batchHistory.setErrorMessage(e.getMessage());
+            batchHistoryService.save(batchHistory);
         }
     }
 }

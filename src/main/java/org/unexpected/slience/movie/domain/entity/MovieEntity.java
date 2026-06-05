@@ -5,7 +5,6 @@ import lombok.*;
 import org.unexpected.slience.schedule.domain.ScheduleEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,7 +1,8 @@
 package org.unexpected.slience.schedule.domain;
 
 import jakarta.persistence.*;
-import org.unexpected.slience.theater.domain.ScreenEntity;
+import org.unexpected.slience.movie.domain.entity.MovieEntity;
+import org.unexpected.slience.screen.domain.ScreenEntity;
 
 @Table(name = "schedule_seats")
 @Entity
@@ -18,8 +19,5 @@ public class ScheduleSeatEntity {
     @ManyToOne
     @JoinColumn(name = "screen_id")
     private ScreenEntity screen;
-
-
-
 
 }

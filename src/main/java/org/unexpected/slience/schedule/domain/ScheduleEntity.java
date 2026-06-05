@@ -2,12 +2,13 @@ package org.unexpected.slience.schedule.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.unexpected.slience.movie.domain.entity.MovieEntity;
-import org.unexpected.slience.theater.domain.ScreenEntity;
+import org.unexpected.slience.screen.domain.ScreenEntity;
 
 import java.time.LocalDateTime;
 
@@ -31,11 +32,13 @@ public class ScheduleEntity {
 
     @NotNull
     private LocalDateTime startTime;
+
     @NotNull
     private LocalDateTime endTime;
+
+    private int seatsLeft;
 
     @Column(name = "booked_out")
     @ColumnDefault("false")
     private boolean bookedOut = false;
-
 }

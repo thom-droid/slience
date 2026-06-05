@@ -7,7 +7,7 @@ import org.unexpected.slience.batch.application.exception.BatchKeyNotFoundExcept
 import org.unexpected.slience.batch.domain.BatchHistoryEntity;
 import org.unexpected.slience.batch.domain.BatchStatus;
 import org.unexpected.slience.batch.domain.BatchType;
-import org.unexpected.slience.movie.infra.MovieSyncHistoryRepository;
+import org.unexpected.slience.movie.infra.MovieBatchHistoryRepository;
 
 import java.time.LocalDateTime;
 
@@ -15,21 +15,21 @@ import java.time.LocalDateTime;
 @Service
 public class MovieBatchHistoryService implements BatchHistoryService {
 
-    private final MovieSyncHistoryRepository movieSyncHistoryRepository;
+    private final MovieBatchHistoryRepository movieSyncHistoryRepository;
 
     @Override
-    public BatchType syncType() {
+    public BatchType batchType() {
         return BatchType.MOVIE;
     }
 
     @Override
     @Transactional
-    public BatchHistoryEntity getOrCreateSynHistory() {
-        return movieSyncHistoryRepository.findBySyncTypeAndStatus(syncType().name(), BatchStatus.PROCESSING.name())
+    public BatchHistoryEntity getOrCreateBatchHistory() {
+        return movieSyncHistoryRepository.findByBatchTypeAndStatus(batchType().name(), BatchStatus.PROCESSING.name())
                 .orElseGet(() ->
                         {
                             BatchHistoryEntity syncHistoryEntity = new BatchHistoryEntity();
-                            syncHistoryEntity.setBatchType(syncType().name());
+                            syncHistoryEntity.setBatchType(batchType().name());
                             syncHistoryEntity.setStatus(BatchStatus.PROCESSING.name());
                             syncHistoryEntity.setStartedAt(LocalDateTime.now());
                             return movieSyncHistoryRepository.save(syncHistoryEntity);
@@ -38,12 +38,12 @@ public class MovieBatchHistoryService implements BatchHistoryService {
     }
 
     @Override
-    public BatchHistoryEntity getSynHistory(Long batchId) {
+    public BatchHistoryEntity getBatchHistory(Long batchId) {
         return movieSyncHistoryRepository.findByBatchId(batchId).orElseThrow(BatchKeyNotFoundException::new);
     }
 
     @Override
-    public void saveSynHistory(BatchHistoryEntity entity) {
+    public void save(BatchHistoryEntity entity) {
         movieSyncHistoryRepository.save(entity);
     }
 }

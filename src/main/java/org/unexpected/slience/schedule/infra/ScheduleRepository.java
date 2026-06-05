@@ -11,15 +11,16 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
 
     @Modifying
     @Query(value = """
-            INSERT INTO schedules (movie_id, screen_id, start_time, end_time)
+            INSERT INTO schedules (movie_id, screen_id, start_time, end_time, seats_left)
             SELECT
-                m.id,
-                (FLOOR(RANDOM() * 9) + 1)::INT AS screen_id,
+                m.movie_id,
+                m.screen_id as screen_id,
                 schedule_time AS start_time,
-                schedule_time + INTERVAL '2 hours' AS end_time
+                schedule_time + INTERVAL '2 hours' AS end_time,
+                m.total_seats as seats_left
             FROM (
                 SELECT
-                    id,
+                    m2.id as movie_id,
                     open_dt,
                     (
                         CASE
@@ -29,15 +30,23 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                         END
                     )
                     + ((gs.day_offset * 5 + gs.slot_offset) * INTERVAL '3 hours')
-                    AS schedule_time
+                    AS schedule_time,
+                    sc.id as screen_id,
+                    sc.total_seats
                 FROM (SELECT m1.id, m1.open_dt
                         FROM movies m1
-                        WHERE NOT EXISTS (SELECT 1 FROM schedules s WHERE s.movie_id = m1.id)) m
+                        WHERE NOT EXISTS (SELECT 1 FROM schedules s WHERE s.movie_id = m1.id)) m2
                 CROSS JOIN (
                     SELECT d AS day_offset, s AS slot_offset
                     FROM GENERATE_SERIES(0, 4) d,   -- 5 days
                          GENERATE_SERIES(0, 4) s    -- 5 schedules per day
-                ) gs
+                ) gs 
+                CROSS JOIN LATERAL (
+                    SELECT id, total_seats 
+                    FROM screens 
+                    ORDER BY RANDOM() 
+                    LIMIT 1
+                ) sc
             ) m
             """, nativeQuery = true)
     int syncSchedules();

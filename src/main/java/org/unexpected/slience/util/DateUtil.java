@@ -1,6 +1,7 @@
 package org.unexpected.slience.util;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
@@ -15,4 +16,6 @@ public class DateUtil {
     public static String parseLocalDateToString(LocalDate localDate) {
         return localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
+
+    public static LocalDateTime parseLocalDateTime(LocalDateTime localDateTime) {}
 }

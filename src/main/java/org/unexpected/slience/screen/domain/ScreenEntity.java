@@ -1,9 +1,11 @@
-package org.unexpected.slience.theater.domain;
+package org.unexpected.slience.screen.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.unexpected.slience.schedule.domain.ScheduleEntity;
 
 import java.util.ArrayList;
@@ -21,8 +23,13 @@ public class ScreenEntity {
 
     private String name;
 
+    @PositiveOrZero
     private int totalRows;
+    @PositiveOrZero
     private int totalCols;
+    @PositiveOrZero
+    @Column(name = "total_seats")
+    private int totalSeats;
 
     @OneToMany(mappedBy = "screen", orphanRemoval = true)
     private List<SeatEntity> seats = new ArrayList<>();
