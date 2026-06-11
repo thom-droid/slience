@@ -17,5 +17,7 @@ public class DateUtil {
         return localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
-    public static LocalDateTime parseLocalDateTime(LocalDateTime localDateTime) {}
+    public static String parseLocalDateTimeToString(LocalDateTime localDateTime) {
+        return parseLocalDateToString(localDateTime.toLocalDate());
+    }
 }

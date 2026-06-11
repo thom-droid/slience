@@ -5,6 +5,7 @@ import org.unexpected.slience.kobis.application.KobisAuditChecker;
 public record MovieTempUpdateDto(
         String movieCd,
         String watchGradeNm,
+        String showTime,
         boolean adultYn,
         boolean restrictedYn
 ) {
@@ -13,6 +14,7 @@ public record MovieTempUpdateDto(
         return new MovieTempUpdateDto(
                 auditChecked.movieCd(),
                 auditChecked.watchGradeNm(),
+                auditChecked.showTm(),
                 auditChecked.adultYn(),
                 auditChecked.restrictedYn()
         );

@@ -14,20 +14,14 @@ public class MovieMapper {
         movie.setMovieCd(e.getMovieCd());
         movie.setMovieNm(e.getMovieNm());
         movie.setMovieNmEn(e.getMovieNmEn());
-        movie.setOpenDt(e.getOpenDt());
+        movie.setReleaseDate(e.getReleaseDate());
         movie.setTypeNm(e.getTypeNm());
         movie.setPrdtStatNm(e.getPrdtStatNm());
         movie.setRepNationNm(e.getRepNationNm());
-
-        movie.setDirectors(
-                e.getDirectors()
-                        .stream()
-                        .map(MovieMapper::toDirector)
-                        .toList()
-        );
-
         movie.setAdultYn(e.isAdultYn());
-        movie.getSchedules();
+        movie.setShowTime(e.getShowTime());
+
+        return movie;
     }
 
     public static Director toDirector(MovieDirectorEntity e) {

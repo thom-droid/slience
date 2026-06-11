@@ -1,4 +1,4 @@
-package org.unexpected.slience.theater.domain;
+package org.unexpected.slience.screen.domain;
 
 public class ScreenMapper {
 

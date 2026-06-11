@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.unexpected.slience.movie.api.response.MovieDetailFlatDto;
 import org.unexpected.slience.movie.api.response.MovieScheduleFlatRowDto;
-import org.unexpected.slience.movie.api.response.MovieScheduleRowDto;
 import org.unexpected.slience.movie.domain.entity.MovieEntity;
 import org.unexpected.slience.movie.domain.entity.Status;
 
@@ -20,14 +20,15 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
 
     @Modifying
     @Query(value = """
-                INSERT INTO movies (movie_cd, movie_nm, movie_nm_en, open_dt,
-                                    prdt_stat_nm, status, rep_genre_nm, rep_nation_nm, type_nm, adult_yn)
-                SELECT t.movie_cd, t.movie_nm, t.movie_nm_en, to_date(t.open_dt, 'YYYYMMDD'),
-                       t.prdt_stat_nm, CASE WHEN to_date(t.open_dt, 'YYYYMMDD') + INTERVAL '30 DAYS' < CURRENT_DATE
+                INSERT INTO movies (movie_cd, movie_nm, movie_nm_en, release_date,
+                                    prdt_stat_nm, status, rep_genre_nm, rep_nation_nm,
+                                    type_nm, adult_yn, show_time)
+                SELECT t.movie_cd, t.movie_nm, t.movie_nm_en, to_date(t.release_date, 'YYYYMMDD'),
+                       t.prdt_stat_nm, CASE WHEN to_date(t.release_date, 'YYYYMMDD') + INTERVAL '30 DAYS' < CURRENT_DATE
                                             THEN 'CLOSED'
                                             ELSE s.status
                                        END AS status,
-                       t.rep_genre_nm, t.rep_nation_nm, t.type_nm, t.adult_yn
+                       t.rep_genre_nm, t.rep_nation_nm, t.type_nm, t.adult_yn, show_time
                 FROM movie_temps t
                 LEFT JOIN (SELECT 'PLAYING' AS status, '개봉' AS prdt_stat_nm
                                 UNION ALL
@@ -40,8 +41,9 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
                 ON CONFLICT (movie_cd)
                 DO UPDATE set
                     movie_nm = EXCLUDED.movie_nm,
-                    open_dt = EXCLUDED.open_dt,
+                    release_date = EXCLUDED.release_date,
                     prdt_stat_nm = EXCLUDED.prdt_stat_nm,
+                    show_time = EXCLUDED.show_time,
                     status = EXCLUDED.status
             """,
             nativeQuery = true)
@@ -69,8 +71,8 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
             select m
             from MovieEntity m
             where (:status is null or m.status = :status)
-            and m.openDt >= :startDate
-            and m.openDt < :endDate
+            and m.releaseDate >= :startDate
+            and m.releaseDate < :endDate
             """)
     List<MovieEntity> findMoviesByStatusAndDate(@Param("status") Status status,
                                                 @Param("startDate") LocalDate startDate,
@@ -106,5 +108,27 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
               and sch.startTime <  :endDateTime
             """)
     List<MovieScheduleFlatRowDto> findMoviesByDate(@Param("startTime") LocalDateTime startDateTime,
-                                                          @Param("endTime") LocalDateTime endDateTime);
+                                                   @Param("endTime") LocalDateTime endDateTime);
+
+    @Query(value = """
+                    select new org.unexpected.slience.movie.api.response.MovieDetailFlatDto(
+                            m.id,
+                            m.movieCd,
+                            m.movieNm,
+                            m.movieNmEn,
+                            m.releaseDate,
+                            m.showTime,
+                            m.status,
+                            m.typeNm,
+                            m.repNationNm,
+                            m.repGenreNm,
+                            m.adultYn,
+                            di.name
+                    )
+                    from MovieEntity m
+                    join m.directors d
+                    join d.director di
+                    where m.id = :id
+            """)
+    List<MovieDetailFlatDto> findMovieDetailById(Long id);
 }

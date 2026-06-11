@@ -21,9 +21,11 @@ public class KobisAuditChecker {
         if (movieInfo == null) return AuditChecked.invalid();
 
         String movieCd = movieInfo.movieCd();
+        String showTm = movieInfo.showTm();
         List<KobisMovieDetailDto.Genres> genres = movieInfo.genres();
         List<KobisMovieDetailDto.Audits> audits = movieInfo.audits();
-        if (genres == null || genres.isEmpty() || audits == null || audits.isEmpty()) return AuditChecked.noInfo(movieCd);
+        if (genres == null || genres.isEmpty() || audits == null || audits.isEmpty())
+            return AuditChecked.noInfo(movieCd);
         KobisMovieDetailDto.Audits audit = audits.get(0);
         KobisMovieDetailDto.Genres genre = genres.get(0);
         String genreNm = genre.genreNm();
@@ -33,31 +35,32 @@ public class KobisAuditChecker {
         boolean restricted = checkRestricted(genreNm, watchGradeNm);
 
         return restricted
-                ? AuditChecked.restricted(movieCd, watchGradeNm, adult)
-                : AuditChecked.adult(movieCd, watchGradeNm, adult);
+                ? AuditChecked.restricted(movieCd, watchGradeNm, showTm, adult)
+                : AuditChecked.adult(movieCd, watchGradeNm, showTm, adult);
     }
 
-    public record AuditChecked (
+    public record AuditChecked(
             String movieCd,
             String watchGradeNm,
+            String showTm,
             boolean adultYn,
             boolean restrictedYn,
             boolean valid
     ) {
         public static AuditChecked invalid() {
-            return new AuditChecked(null, null, false, false, false);
+            return new AuditChecked(null, null, null, false, false, false);
         }
 
         public static AuditChecked noInfo(String movieCd) {
-            return new AuditChecked(movieCd,"",false,false, true);
+            return new AuditChecked(movieCd, "", null, false, false, true);
         }
 
-        public static AuditChecked adult(String movieCd, String watchGradeNm, boolean adultYn) {
-            return new AuditChecked(movieCd, watchGradeNm, adultYn, false, true);
+        public static AuditChecked adult(String movieCd, String watchGradeNm, String showTm, boolean adultYn) {
+            return new AuditChecked(movieCd, watchGradeNm, showTm, adultYn, false, true);
         }
 
-        public static AuditChecked restricted(String movieCd, String watchGradeNm, boolean adultYn) {
-            return new AuditChecked(movieCd, watchGradeNm, adultYn, true, true);
+        public static AuditChecked restricted(String movieCd, String watchGradeNm, String showTm, boolean adultYn) {
+            return new AuditChecked(movieCd, watchGradeNm, showTm, adultYn, true, true);
         }
     }
 }

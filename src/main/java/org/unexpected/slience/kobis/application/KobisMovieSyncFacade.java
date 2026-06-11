@@ -52,10 +52,11 @@ public class KobisMovieSyncFacade {
             int insertedKobisMovieCount = kobisMovieCommandService.insertKobisMovie(batchId, kobisMovieListResponse);
             List<String> newMovieCds = movieTempQueryService.findNewMoviesByBatchId(batchId);
             stopWatch.stop();
-            log.info("inserted movie temp :: {}. task {} took {} sec", newMovieCds.size(), stopWatch.lastTaskInfo().getTaskName(), stopWatch.lastTaskInfo().getTimeSeconds());
+            log.info("inserted movie temp :: {}. task {} took {} sec", insertedKobisMovieCount, stopWatch.lastTaskInfo().getTaskName(), stopWatch.lastTaskInfo().getTimeSeconds());
 
             if (newMovieCds.isEmpty()) {
-
+                log.info("no new movies found. sync finished");
+                return;
             }
 
             stopWatch.start("fetch movie details");

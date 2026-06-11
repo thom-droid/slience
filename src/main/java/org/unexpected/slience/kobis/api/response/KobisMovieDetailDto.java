@@ -7,6 +7,7 @@ public record KobisMovieDetailDto(MovieInfoResult movieInfoResult) {
 
     public record MovieInfo(String movieCd,
                             String movieNm,
+                            String showTm,
                             List<Audits> audits,
                             List<Genres> genres
     ) {}

@@ -3,7 +3,7 @@ package org.unexpected.slience.movie.api.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MovieScheduleRowDto(
+public record MovieScheduleResponse(
         Long movieId,
         String movieCd,
         String movieNm,

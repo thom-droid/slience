@@ -33,8 +33,8 @@ public class MovieEntity {
     @Column(name = "movie_nm_en")
     private String movieNmEn;
 
-    @Column(name = "open_dt")
-    private LocalDate openDt;
+    @Column(name = "release_date")
+    private LocalDate releaseDate;
 
     @Column(name = "prdt_stat_nm")
     private String prdtStatNm;
@@ -54,6 +54,9 @@ public class MovieEntity {
 
     @Column(name = "adult_yn")
     private boolean adultYn;
+
+    @Column(name = "show_time")
+    private String showTime;
 
     @Builder.Default
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})

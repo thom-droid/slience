@@ -21,7 +21,7 @@ public class Movie {
 
     private String movieNmEn;
 
-    private LocalDate openDt;
+    private LocalDate releaseDate;
 
     private String prdtStatNm;
 
@@ -35,6 +35,5 @@ public class Movie {
 
     private boolean adultYn;
 
-    private List<Director> directors = new ArrayList<>();
-    private List<Schedule> schedules = new ArrayList<>();
+    private String showTime;
 }

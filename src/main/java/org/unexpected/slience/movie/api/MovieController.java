@@ -1,12 +1,10 @@
 package org.unexpected.slience.movie.api;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.unexpected.slience.movie.api.response.MovieDetailResponse;
 import org.unexpected.slience.movie.api.response.MovieListResponse;
-import org.unexpected.slience.movie.api.response.MovieScheduleRowDto;
+import org.unexpected.slience.movie.api.response.MovieScheduleResponse;
 import org.unexpected.slience.movie.application.MovieQueryService;
 import org.unexpected.slience.movie.domain.entity.Status;
 
@@ -28,8 +26,13 @@ public class MovieController {
                 .toList();
     }
 
-    @GetMapping
-    public List<MovieScheduleRowDto> getMoviesByDate(@RequestParam(value = "date", required = true) String date) {
+    @GetMapping("/playing")
+    public List<MovieScheduleResponse> getMoviesByDate(@RequestParam(value = "date", required = true) String date) {
         return movieQueryService.getMoviesByDate(date);
+    }
+
+    @GetMapping("/{id}")
+    public MovieDetailResponse getMovieDetail(@PathVariable Long id) {
+        return movieQueryService.getMovieDetail(id);
     }
 }

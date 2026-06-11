@@ -7,11 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.unexpected.slience.config.kobis.KobisProperties;
 import org.unexpected.slience.kobis.api.request.KobisMovieSearchRequest;
 import org.unexpected.slience.kobis.api.response.KobisMovieDetailDto;
-import org.unexpected.slience.kobis.api.response.KobisMovieDto;
 import org.unexpected.slience.kobis.api.response.KobisMovieListResponse;
-import org.unexpected.slience.kobis.api.response.KobisMovieListResult;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

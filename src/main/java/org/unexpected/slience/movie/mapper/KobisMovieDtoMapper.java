@@ -14,7 +14,7 @@ public class KobisMovieDtoMapper {
         entity.setMovieCd(dto.getMovieCd());
         entity.setMovieNm(dto.getMovieNm());
         entity.setMovieNmEn(dto.getMovieNmEn());
-        entity.setOpenDt(dto.getOpenDt());
+        entity.setReleaseDate(dto.getOpenDt());
         entity.setTypeNm(dto.getTypeNm());
         entity.setPrdtStatNm(dto.getPrdtStatNm());
         entity.setRepNationNm(dto.getRepNationNm());

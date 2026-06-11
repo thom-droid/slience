@@ -22,7 +22,8 @@ public class MovieTempEntity {
 
     private String movieNmEn;
 
-    private String openDt;
+    @Column(name = "release_date")
+    private String releaseDate;
 
     private String prdtStatNm;
 
@@ -34,4 +35,8 @@ public class MovieTempEntity {
     private String watchGradeNm;
     private boolean adultYn;
     private boolean restrictedYn;
+
+    @Column(name = "show_time")
+    private String showTime;
+
 }

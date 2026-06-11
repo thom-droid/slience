@@ -19,6 +19,14 @@ public class BatchHistory {
 
     public void complete() {
         this.status = BatchStatus.COMPLETED.name();
+        this.setFinishedAt(LocalDateTime.now());
+    }
+
+    public void completeWithNoUpdate() {
+        this.status = BatchStatus.COMPLETED.name();
+        this.setSuccessCount(0);
+        this.setFailedCount(0);
+        this.setFinishedAt(LocalDateTime.now());
     }
 
     public void fail(String message) {

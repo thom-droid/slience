@@ -18,6 +18,7 @@ public class MovieTempBulkRepository {
         String sql = """
                 UPDATE movie_temps
                     SET watch_grade_nm = ?,
+                        show_time = ?,
                         adult_yn = ?,
                         restricted_yn = ?
                     WHERE batch_id = ?
@@ -30,10 +31,11 @@ public class MovieTempBulkRepository {
                 1000,
                 (ps, dto) -> {
                     ps.setString(1, dto.watchGradeNm());
-                    ps.setBoolean(2, dto.adultYn());
-                    ps.setBoolean(3, dto.restrictedYn());
-                    ps.setLong(4, batchId);
-                    ps.setString(5, dto.movieCd());
+                    ps.setString(2, dto.showTime());
+                    ps.setBoolean(3, dto.adultYn());
+                    ps.setBoolean(4, dto.restrictedYn());
+                    ps.setLong(5, batchId);
+                    ps.setString(6, dto.movieCd());
                 }
         );
 
