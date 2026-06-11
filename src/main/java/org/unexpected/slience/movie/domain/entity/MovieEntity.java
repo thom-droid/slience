@@ -61,7 +61,7 @@ public class MovieEntity {
     private List<MovieDirectorEntity> directors = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<ScheduleEntity> schedules = new ArrayList<>();
 
 }

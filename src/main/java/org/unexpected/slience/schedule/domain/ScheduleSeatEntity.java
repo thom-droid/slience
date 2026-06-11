@@ -19,7 +19,4 @@ public class ScheduleSeatEntity {
     @JoinColumn(name = "screen_id")
     private ScreenEntity screen;
 
-
-
-
 }
