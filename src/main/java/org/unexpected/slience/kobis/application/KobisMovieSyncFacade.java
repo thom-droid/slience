@@ -25,14 +25,14 @@ public class KobisMovieSyncFacade {
 
     private final MovieTempCommandService kobisMovieCommandService;
     private final ScheduleCommandService scheduleCommandService;
-    private final BatchHistoryFactory syncHistoryFactory;
+    private final BatchHistoryFactory batchHistoryFactory;
     private final KobisMovieClient kobisMovieClient;
     private final MovieTempQueryService movieTempQueryService;
     private final MovieTempCommandService movieTempCommandService;
 
     public void sync() throws BatchFailedException {
 
-        BatchHistoryService batchHistoryService = syncHistoryFactory.getInstance(BatchType.MOVIE);
+        BatchHistoryService batchHistoryService = batchHistoryFactory.getInstance(BatchType.MOVIE);
         BatchHistoryEntity batchHistory = batchHistoryService.getOrCreateBatchHistory();
         Long batchId = batchHistory.getBatchId();
 
@@ -60,6 +60,7 @@ public class KobisMovieSyncFacade {
             }
 
             stopWatch.start("fetch movie details");
+            log.info("start fetching movie detail");
             List<MovieTempUpdateDto> bulkUpdates = newMovieCds.stream()
                     .map(kobisMovieClient::fetchMovieDetail)
                     .map(KobisAuditChecker::doCheck)

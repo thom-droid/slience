@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.unexpected.slience.movie.api.response.MovieDetailFlatDto;
 import org.unexpected.slience.movie.api.response.MovieDetailResponse;
-import org.unexpected.slience.movie.api.response.MovieScheduleFlatRowDto;
+import org.unexpected.slience.movie.api.response.MovieScheduleFlatRow;
 import org.unexpected.slience.movie.api.response.MovieScheduleResponse;
 import org.unexpected.slience.movie.application.exception.NoMovieFoundException;
 import org.unexpected.slience.movie.domain.entity.MovieEntity;
@@ -35,23 +35,25 @@ public class MovieQueryService {
         return movieRepository.findMoviesByStatus(status, pageRequest);
     }
 
-    public List<MovieScheduleResponse> getMoviesByDate(String date) {
+    public List<MovieScheduleResponse> getMovieSchedulesByDate(Long movieId, String date) {
         LocalDate startDate = DateUtil.parseYYYYMMDDtoLocalDate(date);
         LocalDateTime startDateTIme = startDate.atStartOfDay();
         LocalDateTime endDateTime = startDate.plusDays(1).atStartOfDay();
-        List<MovieScheduleFlatRowDto> flatRows = movieRepository.findMoviesByDate(startDateTIme, endDateTime)
+        List<MovieScheduleFlatRow> flatRows = movieRepository.findMoviesByDate(movieId, startDateTIme, endDateTime)
                 .stream()
                 .toList();
 
         Map<Long, MovieScheduleResponse> movies = new LinkedHashMap<>();
 
-        for (MovieScheduleFlatRowDto r : flatRows) {
+        for (MovieScheduleFlatRow r : flatRows) {
             MovieScheduleResponse row = movies.computeIfAbsent(r.movieId(),
-                    id -> new MovieScheduleResponse(id,
-                            r.movieCd(),
-                            r.movieNm(),
-                            new ArrayList<>()
-                    )
+                    id ->
+                            new MovieScheduleResponse(
+                                    id,
+                                    r.movieCd(),
+                                    r.movieNm(),
+                                    new ArrayList<>()
+                            )
             );
 
             MovieScheduleResponse.Screen screen = new MovieScheduleResponse.Screen(
@@ -59,7 +61,9 @@ public class MovieQueryService {
                     r.screenName(),
                     new ArrayList<>());
 
-            MovieScheduleResponse.Schedule schedule = new MovieScheduleResponse.Schedule(r.seatsLeft(),
+            MovieScheduleResponse.Schedule schedule = new MovieScheduleResponse.Schedule(
+                    r.scheduleId(),
+                    r.seatsLeft(),
                     r.totalSeats(),
                     r.bookedOut(),
                     r.startDateTime(),
@@ -80,9 +84,9 @@ public class MovieQueryService {
                 .reduce((first, second) -> first)
                 .orElseThrow(() -> new NoMovieFoundException(id));
 
-        String directors = flat.stream()
+        Set<String> directorNms = flat.stream()
                 .map(MovieDetailFlatDto::directorNm)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.toSet());
 
         return new MovieDetailResponse(
                 flatDto.movieId(),
@@ -96,7 +100,7 @@ public class MovieQueryService {
                 flatDto.repNationNm(),
                 flatDto.repGenreNm(),
                 flatDto.adultYn(),
-                directors
+                directorNms
         );
     }
 }

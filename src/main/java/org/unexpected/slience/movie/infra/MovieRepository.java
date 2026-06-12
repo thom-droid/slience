@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.unexpected.slience.movie.api.response.MovieDetailFlatDto;
-import org.unexpected.slience.movie.api.response.MovieScheduleFlatRowDto;
+import org.unexpected.slience.movie.api.response.MovieScheduleFlatRow;
 import org.unexpected.slience.movie.domain.entity.MovieEntity;
 import org.unexpected.slience.movie.domain.entity.Status;
 
@@ -88,12 +88,13 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
                                          Pageable pageRequest);
 
     @Query(value = """
-            select new org.unexpected.slience.movie.api.response.MovieScheduleFlatRowDto(
+            select new org.unexpected.slience.movie.api.response.MovieScheduleFlatRow(
                         m.id,
                         m.movieCd,
                         m.movieNm,
                         s.id,
                         s.name,
+                        sch.id,
                         sch.seatsLeft,
                         s.totalSeats,
                         sch.bookedOut,
@@ -104,11 +105,13 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
             join m.schedules sch
             join sch.screen s
             where m.status = 'PLAYING'
+              and (:movieId is null or m.id = :movieId)
               and sch.startTime >= :startDateTime
               and sch.startTime <  :endDateTime
             """)
-    List<MovieScheduleFlatRowDto> findMoviesByDate(@Param("startTime") LocalDateTime startDateTime,
-                                                   @Param("endTime") LocalDateTime endDateTime);
+    List<MovieScheduleFlatRow> findMoviesByDate(@Param("movieId") Long movieId,
+                                                @Param("startTime") LocalDateTime startDateTime,
+                                                @Param("endTime") LocalDateTime endDateTime);
 
     @Query(value = """
                     select new org.unexpected.slience.movie.api.response.MovieDetailFlatDto(

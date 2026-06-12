@@ -1,10 +1,19 @@
 package org.unexpected.slience.schedule.domain;
 
 import jakarta.persistence.*;
-import org.unexpected.slience.movie.domain.entity.MovieEntity;
-import org.unexpected.slience.screen.domain.ScreenEntity;
+import lombok.Getter;
+import lombok.Setter;
+import org.unexpected.slience.screen.domain.SeatEntity;
 
-@Table(name = "schedule_seats")
+@Getter
+@Setter
+@Table(
+        name = "schedule_seats",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_schedule_seat_id",
+                columnNames = {"schedule_id", "seat_id"}
+        )
+)
 @Entity
 public class ScheduleSeatEntity {
 
@@ -17,7 +26,7 @@ public class ScheduleSeatEntity {
     private ScheduleEntity schedule;
 
     @ManyToOne
-    @JoinColumn(name = "screen_id")
-    private ScreenEntity screen;
+    @JoinColumn(name = "seat_id")
+    private SeatEntity seat;
 
 }

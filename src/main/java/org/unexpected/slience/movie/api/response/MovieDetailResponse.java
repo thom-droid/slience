@@ -3,6 +3,7 @@ package org.unexpected.slience.movie.api.response;
 import org.unexpected.slience.movie.domain.entity.Status;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public record MovieDetailResponse(Long movieId,
                                   String movieCd,
@@ -15,6 +16,6 @@ public record MovieDetailResponse(Long movieId,
                                   String repNationNm,
                                   String repGenreNm,
                                   boolean adultYn,
-                                  String directorNm) {
+                                  Set<String> directorNms) {
 
 }

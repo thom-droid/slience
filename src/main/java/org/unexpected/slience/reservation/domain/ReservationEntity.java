@@ -3,10 +3,11 @@ package org.unexpected.slience.reservation.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.unexpected.slience.schedule.domain.ScheduleEntity;
 import org.unexpected.slience.user.domain.UserEntity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -18,11 +19,10 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
-    private ScheduleEntity schedule;
+    @OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY)
+    private List<ReservationScheduleSeatEntity> reservationSeats = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
@@ -32,4 +32,6 @@ public class ReservationEntity {
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
 }

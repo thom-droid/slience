@@ -17,6 +17,7 @@ public record MovieScheduleResponse(
     ) {}
 
     public record Schedule (
+            Long scheduleId,
             int seatsLeft,
             int totalSeats,
             boolean bookedOut,

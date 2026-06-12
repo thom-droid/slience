@@ -13,7 +13,7 @@ import lombok.Setter;
         uniqueConstraints = {
         @UniqueConstraint(
                 name = "uk_seat",
-                columnNames = {"screens_id", "seat_row", "seat_number"}
+                columnNames = {"screen_id", "seat_row", "seat_number"}
         )
     }
 )
@@ -24,7 +24,7 @@ public class SeatEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "screens_id")
+    @JoinColumn(name = "screen_id")
     private ScreenEntity screen;
 
     @Column(nullable = false)

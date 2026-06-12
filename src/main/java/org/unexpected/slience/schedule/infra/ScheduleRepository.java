@@ -3,8 +3,12 @@ package org.unexpected.slience.schedule.infra;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.unexpected.slience.schedule.api.response.ScheduleFlatRow;
 import org.unexpected.slience.schedule.domain.ScheduleEntity;
+
+import java.util.List;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> {
@@ -52,4 +56,52 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
             ) m
             """, nativeQuery = true)
     int syncSchedules();
+
+    @Query(value = """
+                select new org.unexpected.slience.schedule.api.response.ScheduleFlatRow(
+                    sch.id,
+                    m.id,
+                    m.movieCd,
+                    m.movieNm,
+                    m.movieNmEn,
+                    m.releaseDate,
+                    m.showTime,
+                    m.status,
+                    m.typeNm,
+                    m.repNationNm,
+                    m.repGenreNm,
+                    m.adultYn,
+                    di.id,
+                    di.name,
+                    scr.id,
+                    scr.name,
+                    sch.seatsLeft,
+                    scr.totalSeats,
+                    sch.bookedOut,
+                    sch.startTime,
+                    sch.endTime,
+                    s.id,
+                    s.seatRow,
+                    s.seatNumber,
+                    case when exists (
+                        select rss.id
+                        from ReservationScheduleSeatEntity rss
+                        where rss.scheduleSeatEntity.schedule = sch
+                        and rss.reservation.status IN (
+                            org.unexpected.slience.reservation.domain.Status.RESERVED,
+                            org.unexpected.slience.reservation.domain.Status.PAID
+                            )
+                        )
+                    then true else false end
+                    )
+                from ScheduleEntity sch
+                join sch.movie m
+                join m.directors d
+                join d.director di
+                join sch.screen scr
+                join scr.seats s
+                where sch.id = :scheduleId
+            """)
+    List<ScheduleFlatRow> findScheduleDetail(@Param("scheduleId") Long scheduleId);
+
 }
