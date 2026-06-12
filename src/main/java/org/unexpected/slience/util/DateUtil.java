@@ -6,15 +6,20 @@ import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
 
+    private static final DateTimeFormatter YYYYMMDD = DateTimeFormatter.ofPattern("yyyyMMdd");
+
     private DateUtil() {}
 
     public static LocalDate parseYYYYMMDDtoLocalDate(String yyyyMMddStr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        return LocalDate.parse(yyyyMMddStr, formatter);
+        return LocalDate.parse(yyyyMMddStr, YYYYMMDD);
+    }
+
+    public static LocalDateTime parseYYYYMMDDtoLocalDateTime(String yyyyMMddStr) {
+        return parseYYYYMMDDtoLocalDate(yyyyMMddStr).atStartOfDay();
     }
 
     public static String parseLocalDateToString(LocalDate localDate) {
-        return localDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        return localDate.format(YYYYMMDD);
     }
 
     public static String parseLocalDateTimeToString(LocalDateTime localDateTime) {

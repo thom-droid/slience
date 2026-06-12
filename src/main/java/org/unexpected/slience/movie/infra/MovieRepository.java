@@ -70,13 +70,18 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
     @Query(value = """
             select m
             from MovieEntity m
+
             where (:status is null or m.status = :status)
-            and m.releaseDate >= :startDate
-            and m.releaseDate < :endDate
+            and exists (select  1
+                        from    ScheduleEntity sch
+                        where   sch.movie = m
+                        and     sch.startTime >= :startDate
+                        and     sch.startTime < :endDate
+                        )
             """)
     List<MovieEntity> findMoviesByStatusAndDate(@Param("status") Status status,
-                                                @Param("startDate") LocalDate startDate,
-                                                @Param("endDate") LocalDate endDate,
+                                                @Param("startDate") LocalDateTime startDate,
+                                                @Param("endDate") LocalDateTime endDate,
                                                 Pageable pageRequest);
 
     @Query(value = """
@@ -110,8 +115,8 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
               and sch.startTime <  :endDateTime
             """)
     List<MovieScheduleFlatRow> findMoviesByDate(@Param("movieId") Long movieId,
-                                                @Param("startTime") LocalDateTime startDateTime,
-                                                @Param("endTime") LocalDateTime endDateTime);
+                                                @Param("startDateTime") LocalDateTime startDateTime,
+                                                @Param("endDateTime") LocalDateTime endDateTime);
 
     @Query(value = """
                     select new org.unexpected.slience.movie.api.response.MovieDetailFlatDto(

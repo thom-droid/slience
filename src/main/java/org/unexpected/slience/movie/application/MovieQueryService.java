@@ -28,8 +28,8 @@ public class MovieQueryService {
     public List<MovieEntity> getMovies(Status status, String date, int page) {
         PageRequest pageRequest = PageRequest.of(page, 10);
         if (StringUtils.hasText(date)) {
-            LocalDate startDate = DateUtil.parseYYYYMMDDtoLocalDate(date);
-            LocalDate endDate = startDate.plusDays(1);
+            LocalDateTime startDate = DateUtil.parseYYYYMMDDtoLocalDateTime(date);
+            LocalDateTime endDate = startDate.plusDays(1);
             return movieRepository.findMoviesByStatusAndDate(status, startDate, endDate, pageRequest);
         }
         return movieRepository.findMoviesByStatus(status, pageRequest);
