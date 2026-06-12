@@ -7,7 +7,7 @@ import org.unexpected.slience.batch.domain.BatchHistoryEntity;
 import java.util.Optional;
 
 @Repository
-public interface MovieBatchHistoryRepository extends JpaRepository<BatchHistoryEntity, Long> {
+public interface BatchHistoryRepository extends JpaRepository<BatchHistoryEntity, Long> {
 
     Optional<BatchHistoryEntity> findByBatchTypeAndStatus(String batchType, String status);
 

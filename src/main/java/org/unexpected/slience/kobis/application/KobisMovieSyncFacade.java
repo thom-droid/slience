@@ -4,18 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
-import org.unexpected.slience.batch.application.BatchHistoryFactory;
-import org.unexpected.slience.batch.application.BatchHistoryService;
+import org.unexpected.slience.batch.application.BatchCommandService;
+import org.unexpected.slience.batch.application.BatchHistoryQueryService;
 import org.unexpected.slience.batch.application.exception.BatchFailedException;
-import org.unexpected.slience.batch.domain.BatchHistoryEntity;
-import org.unexpected.slience.batch.domain.BatchStatus;
+import org.unexpected.slience.batch.domain.BatchHistory;
 import org.unexpected.slience.batch.domain.BatchType;
 import org.unexpected.slience.kobis.api.request.KobisMovieSearchRequest;
 import org.unexpected.slience.kobis.api.request.MovieTempUpdateDto;
 import org.unexpected.slience.kobis.api.response.KobisMovieListResponse;
 import org.unexpected.slience.schedule.application.ScheduleCommandService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -25,15 +23,15 @@ public class KobisMovieSyncFacade {
 
     private final MovieTempCommandService kobisMovieCommandService;
     private final ScheduleCommandService scheduleCommandService;
-    private final BatchHistoryFactory batchHistoryFactory;
+    private final BatchHistoryQueryService batchHistoryQueryService;
+    private final BatchCommandService batchCommandService;
     private final KobisMovieClient kobisMovieClient;
     private final MovieTempQueryService movieTempQueryService;
     private final MovieTempCommandService movieTempCommandService;
 
     public void sync() throws BatchFailedException {
 
-        BatchHistoryService batchHistoryService = batchHistoryFactory.getInstance(BatchType.MOVIE);
-        BatchHistoryEntity batchHistory = batchHistoryService.getOrCreateBatchHistory();
+        BatchHistory batchHistory = batchHistoryQueryService.getOrCreate(BatchType.MOVIE.name());
         Long batchId = batchHistory.getBatchId();
 
         log.info("KobisMovieSyncFacade.sync started");
@@ -55,6 +53,8 @@ public class KobisMovieSyncFacade {
             log.info("inserted movie temp :: {}. task {} took {} sec", insertedKobisMovieCount, stopWatch.lastTaskInfo().getTaskName(), stopWatch.lastTaskInfo().getTimeSeconds());
 
             if (newMovieCds.isEmpty()) {
+                batchHistory.completeWithNoUpdate();
+                batchCommandService.save(batchHistory);
                 log.info("no new movies found. sync finished");
                 return;
             }
@@ -84,16 +84,14 @@ public class KobisMovieSyncFacade {
             scheduleCommandService.syncSchedules();
             log.info("schedule synced");
 
-            batchHistory.setSuccessCount(upsert);
-            batchHistory.setStatus(BatchStatus.COMPLETED.name());
-            batchHistory.setFinishedAt(LocalDateTime.now());
-            batchHistoryService.save(batchHistory);
+            batchHistory.complete(upsert, 0);
+            batchCommandService.save(batchHistory);
             log.info("KobisMovieSyncFacade.sync finished");
 
         } catch (Exception e) {
-            batchHistory.setStatus(BatchStatus.FAILED.name());
-            batchHistory.setErrorMessage(e.getMessage());
-            batchHistoryService.save(batchHistory);
+            log.error(e.getMessage());
+            batchHistory.fail(e.getMessage());
+            batchCommandService.save(batchHistory);
         }
     }
 }

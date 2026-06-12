@@ -15,9 +15,7 @@ public class BatchHistoryMapper {
         return b;
     }
 
-    public static BatchHistoryEntity toEntity(BatchHistory b) {
-        BatchHistoryEntity e = new BatchHistoryEntity();
-        e.setBatchId(b.getBatchId());
+    public static void updateEntity(BatchHistory b, BatchHistoryEntity e) {
         e.setBatchType(b.getBatchType());
         e.setStatus(b.getStatus());
         e.setStartedAt(b.getStartedAt());
@@ -25,6 +23,5 @@ public class BatchHistoryMapper {
         e.setFailedCount(b.getFailedCount());
         e.setErrorMessage(b.getErrorMessage());
         e.setSuccessCount(b.getSuccessCount());
-        return e;
     }
 }

@@ -17,9 +17,19 @@ public class BatchHistory {
     private Integer failedCount;
     private String errorMessage;
 
-    public void complete() {
+    public static BatchHistory start(String batchType) {
+        BatchHistory batchHistory = new BatchHistory();
+        batchHistory.batchType = batchType;
+        batchHistory.status = BatchStatus.PROCESSING.name();
+        batchHistory.startedAt = LocalDateTime.now();
+        return batchHistory;
+    }
+
+    public void complete(Integer successCount, Integer failedCount) {
         this.status = BatchStatus.COMPLETED.name();
-        this.setFinishedAt(LocalDateTime.now());
+        this.successCount = successCount;
+        this.failedCount = failedCount;
+        this.finishedAt = LocalDateTime.now();
     }
 
     public void completeWithNoUpdate() {
@@ -32,5 +42,6 @@ public class BatchHistory {
     public void fail(String message) {
         this.status = BatchStatus.FAILED.name();
         this.errorMessage = message;
+        this.finishedAt = LocalDateTime.now();
     }
 }
