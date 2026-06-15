@@ -1,13 +1,17 @@
 package org.unexpected.slience.schedule.infra;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.unexpected.slience.schedule.api.response.ScheduleFlatRow;
 import org.unexpected.slience.schedule.domain.ScheduleEntity;
+import org.unexpected.slience.schedule.domain.ScheduleSeatEntity;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -84,10 +88,10 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     s.seatRow,
                     s.seatNumber,
                     case when exists (
-                        select rss.id
-                        from ReservationScheduleSeatEntity rss
-                        where rss.scheduleSeatEntity.schedule = sch
-                        and rss.reservation.status IN (
+                        select sa.scheduleSeatId
+                        from SeatAllocationEntity sa
+                        where sa.scheduleSeatEntity.schedule = sch
+                        and sa.reservation.status IN (
                             org.unexpected.slience.reservation.domain.Status.RESERVED,
                             org.unexpected.slience.reservation.domain.Status.PAID
                             )
@@ -104,4 +108,29 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
             """)
     List<ScheduleFlatRow> findScheduleDetail(@Param("scheduleId") Long scheduleId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+                select sc
+                from ScheduleSeatEntity sc
+                where sc.schedule.id = :scheduleId
+                and sc.seat.id in :seatIds
+                and sc.schedule.movie.id = :movieId
+                and sc.schedule.movie.status = Status.PLAYING
+                order by sc.id
+            """)
+
+    List<ScheduleSeatEntity> findScheduleSeatForUpdate(@Param("movieId") Long movieId,
+                                                       @Param("scheduleId") Long scheduleId,
+                                                       @Param("seatIds") Collection<Long> seatIds);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+                select exists
+                    (select 1
+                    from SeatAllocationEntity sa
+                    where sa.scheduleSeatId in :scheduleSeatIds
+                    and sa.reservation.status in (Status.PAID, Status.RESERVED)
+                    )
+            """)
+    boolean existsAllocatedSeat(Collection<Long> scheduleSeatIds);
 }

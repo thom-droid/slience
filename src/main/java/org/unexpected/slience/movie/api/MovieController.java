@@ -26,7 +26,7 @@ public class MovieController {
                 .toList();
     }
 
-    @GetMapping("/playing/schedules")
+    @GetMapping("/playing")
     public List<MovieScheduleResponse> getMoviesByDate(@RequestParam(value="movieId", required = false) Long movieId,
                                                        @RequestParam(value = "date", required = true) String date) {
         return movieQueryService.getMovieSchedulesByDate(movieId, date);

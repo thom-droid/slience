@@ -21,12 +21,12 @@ public class ScheduleSeatEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "schedule_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "schedule_id", nullable = false)
     private ScheduleEntity schedule;
 
-    @ManyToOne
-    @JoinColumn(name = "seat_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "seat_id", nullable = false)
     private SeatEntity seat;
 
 }

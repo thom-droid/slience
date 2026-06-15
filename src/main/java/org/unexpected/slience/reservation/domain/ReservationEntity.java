@@ -19,7 +19,7 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<ReservationScheduleSeatEntity> reservationSeats = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

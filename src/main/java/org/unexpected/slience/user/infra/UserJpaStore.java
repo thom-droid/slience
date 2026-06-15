@@ -22,6 +22,14 @@ public class UserJpaStore implements UserStore {
     }
 
     @Override
+    public User findByUsername(String username) {
+        return userRepository
+                .findByUsername(username)
+                .map(UserEntityMapper::toUserDomain)
+                .orElseThrow(() -> new NoUserFoundException("User not found by username: " + username));
+    }
+
+    @Override
     public User save(User user) {
         UserEntity save = userRepository.save(UserEntityMapper.toEntity(user));
         return UserEntityMapper.toUserDomain(save);

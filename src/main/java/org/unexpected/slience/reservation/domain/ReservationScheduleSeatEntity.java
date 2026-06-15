@@ -5,9 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.unexpected.slience.schedule.domain.ScheduleSeatEntity;
 
+/***
+ * 예약 history 담당
+ */
 @Setter
 @Getter
-@Table(name = "reservation_schedule_seats")
+@Table(
+        name = "reservation_schedule_seats",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"reservation_id", "schedule_seat_id"})
+)
 @Entity
 public class ReservationScheduleSeatEntity {
 
