@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 public class DateUtil {
 
     private static final DateTimeFormatter YYYYMMDD = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter YYYYMMDDHHMM =  DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 
     private DateUtil() {}
 
@@ -23,6 +24,6 @@ public class DateUtil {
     }
 
     public static String parseLocalDateTimeToString(LocalDateTime localDateTime) {
-        return parseLocalDateToString(localDateTime.toLocalDate());
+        return localDateTime.format(YYYYMMDDHHMM);
     }
 }

@@ -1,5 +1,7 @@
 package org.unexpected.slience.schedule.domain;
 
+import org.unexpected.slience.schedule.domain.entity.ScheduleEntity;
+
 public class ScheduleEntityMapper {
 
     private ScheduleEntityMapper() { }

@@ -4,4 +4,5 @@ public enum Status {
     BEFORE_PAYMENT,
     RESERVED,
     PAID,
+    CANCELLED,
 }

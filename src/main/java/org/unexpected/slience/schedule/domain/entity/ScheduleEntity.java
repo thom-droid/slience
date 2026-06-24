@@ -1,8 +1,7 @@
-package org.unexpected.slience.schedule.domain;
+package org.unexpected.slience.schedule.domain.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

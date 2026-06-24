@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.unexpected.slience.schedule.application.exception.NoScheduleFoundException;
 import org.unexpected.slience.schedule.domain.Schedule;
-import org.unexpected.slience.schedule.domain.ScheduleEntity;
+import org.unexpected.slience.schedule.domain.entity.ScheduleEntity;
 import org.unexpected.slience.schedule.domain.ScheduleEntityMapper;
 
 @RequiredArgsConstructor

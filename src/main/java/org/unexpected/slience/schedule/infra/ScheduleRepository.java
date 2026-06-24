@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.unexpected.slience.schedule.api.response.ScheduleFlatRow;
-import org.unexpected.slience.schedule.domain.ScheduleEntity;
-import org.unexpected.slience.schedule.domain.ScheduleSeatEntity;
+import org.unexpected.slience.schedule.domain.entity.ScheduleEntity;
+import org.unexpected.slience.schedule.domain.entity.ScheduleSeatEntity;
 
 import java.util.Collection;
 import java.util.List;
@@ -90,7 +90,7 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     case when exists (
                         select sa.scheduleSeatId
                         from SeatAllocationEntity sa
-                        where sa.scheduleSeatEntity.schedule = sch
+                        where sa.scheduleSeat.schedule = sch
                         and sa.reservation.status IN (
                             org.unexpected.slience.reservation.domain.Status.RESERVED,
                             org.unexpected.slience.reservation.domain.Status.PAID
@@ -115,7 +115,7 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                 where sc.schedule.id = :scheduleId
                 and sc.seat.id in :seatIds
                 and sc.schedule.movie.id = :movieId
-                and sc.schedule.movie.status = Status.PLAYING
+                and sc.schedule.movie.status = org.unexpected.slience.movie.domain.entity.Status.PLAYING
                 order by sc.id
             """)
 
@@ -129,7 +129,9 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     (select 1
                     from SeatAllocationEntity sa
                     where sa.scheduleSeatId in :scheduleSeatIds
-                    and sa.reservation.status in (Status.PAID, Status.RESERVED)
+                    and sa.reservation.status in (
+                                org.unexpected.slience.reservation.domain.Status.PAID,
+                                org.unexpected.slience.reservation.domain.Status.RESERVED)
                     )
             """)
     boolean existsAllocatedSeat(Collection<Long> scheduleSeatIds);

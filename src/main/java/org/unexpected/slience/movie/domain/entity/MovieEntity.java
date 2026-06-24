@@ -2,7 +2,7 @@ package org.unexpected.slience.movie.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.unexpected.slience.schedule.domain.ScheduleEntity;
+import org.unexpected.slience.schedule.domain.entity.ScheduleEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

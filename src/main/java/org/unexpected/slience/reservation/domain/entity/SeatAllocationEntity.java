@@ -1,10 +1,10 @@
-package org.unexpected.slience.reservation.domain;
+package org.unexpected.slience.reservation.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.unexpected.slience.schedule.domain.ScheduleSeatEntity;
+import org.unexpected.slience.schedule.domain.entity.ScheduleSeatEntity;
 
 import java.time.LocalDateTime;
 
@@ -43,15 +43,15 @@ public class SeatAllocationEntity {
     @JoinColumn(name = "reservation_id", nullable = false)
     private ReservationEntity reservation;
 
-    @Column(name = "expires_at", nullable = false)
-    private LocalDateTime expiresAt;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     public SeatAllocationEntity(ScheduleSeatEntity scheduleSeat,
                                 ReservationEntity reservation,
-                                LocalDateTime expiresAt) {
+                                LocalDateTime createdAt) {
         this.scheduleSeat = scheduleSeat;
         this.reservation = reservation;
-        this.expiresAt = expiresAt;
+        this.createdAt = createdAt;
     }
 
 }

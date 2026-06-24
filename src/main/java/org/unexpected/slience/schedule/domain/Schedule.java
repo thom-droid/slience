@@ -19,4 +19,8 @@ public class Schedule {
     private LocalDateTime endTime;
 
     private boolean bookedOut;
+
+    public void bookedOut() {
+        this.bookedOut = true;
+    }
 }

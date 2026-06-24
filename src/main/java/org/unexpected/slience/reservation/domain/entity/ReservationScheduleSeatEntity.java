@@ -1,9 +1,9 @@
-package org.unexpected.slience.reservation.domain;
+package org.unexpected.slience.reservation.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.unexpected.slience.schedule.domain.ScheduleSeatEntity;
+import org.unexpected.slience.schedule.domain.entity.ScheduleSeatEntity;
 
 /***
  * 예약 history 담당

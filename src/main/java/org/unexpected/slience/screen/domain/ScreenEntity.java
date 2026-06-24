@@ -5,8 +5,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.unexpected.slience.schedule.domain.ScheduleEntity;
+import org.unexpected.slience.schedule.domain.entity.ScheduleEntity;
 
 import java.util.ArrayList;
 import java.util.List;

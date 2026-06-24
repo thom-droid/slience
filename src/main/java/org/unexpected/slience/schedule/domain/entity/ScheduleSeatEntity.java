@@ -1,4 +1,4 @@
-package org.unexpected.slience.schedule.domain;
+package org.unexpected.slience.schedule.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

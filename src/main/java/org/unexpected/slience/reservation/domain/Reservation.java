@@ -10,9 +10,31 @@ import java.util.List;
 @Setter
 public class Reservation {
 
+    private static final long BEFORE_PAYMENT_EXPIRATION_MINUTE = 15;
+
     private Long id;
-    private List<Long> reservationSeatId;
+    private List<ReservationScheduleSeat> reservationScheduleSeats;
+    private Long userId;
     private LocalDateTime reservedAt;
     private Status status;
     private LocalDateTime expiresAt;
+
+    public void beforePayment() {
+        this.status = Status.BEFORE_PAYMENT;
+        this.expiresAt = LocalDateTime.now().plusMinutes(BEFORE_PAYMENT_EXPIRATION_MINUTE);
+    }
+
+    public void reserved() {
+        this.status = Status.RESERVED;
+        this.reservedAt = LocalDateTime.now();
+    }
+
+    public void paid() {
+        this.status = Status.PAID;
+    }
+
+    public void cancelled() {
+        this.status = Status.CANCELLED;
+    }
+
 }
