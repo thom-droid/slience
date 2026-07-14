@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Movies</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<main class="shell">
+    <div class="topbar">
+        <a class="brand" th:href="@{/}">Silence</a>
+        <nav class="nav">
+            <a th:href="@{/movies}">Movies</a>
+            <a th:href="@{/movies/playing}">Playing</a>
+            <a th:href="@{/reservations/new}">Reserve</a>
+        </nav>
+    </div>
+
+    <h1>Movies</h1>
+    <form class="filters" th:action="@{/movies}" method="get">
+        <label>Status
+            <select name="status">
+                <option value="">All</option>
+                <option th:each="status : ${statuses}"
+                        th:value="${status}"
+                        th:selected="${status == selectedStatus}"
+                        th:text="${status}">Status</option>
+            </select>
+        </label>
+        <label>Date
+            <input type="text" name="date" placeholder="yyyyMMdd" th:value="${date}">
+        </label>
+        <label>Page
+            <input type="number" name="page" min="0" th:value="${page}">
+        </label>
+        <button class="button primary" type="submit">Search</button>
+    </form>
+
+    <div class="table-wrap" th:if="${!movies.isEmpty()}">
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Release</th>
+                <th>Status</th>
+                <th>Genre</th>
+                <th>Directors</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="movie : ${movies}">
+                <td>
+                    <a th:href="@{/movies/{id}(id=${movie.movieId})}" th:text="${movie.movieNm}">Movie</a>
+                    <div class="muted" th:text="${movie.movieNmEn}">English title</div>
+                    <div class="muted" th:text="${movie.movieCd}">Code</div>
+                </td>
+                <td th:text="${movie.releaseDate}">Release</td>
+                <td><span class="badge" th:text="${movie.status}">Status</span></td>
+                <td th:text="${movie.repGenreNm}">Genre</td>
+                <td>
+                    <span th:each="director, stat : ${movie.directors}"
+                          th:text="${director.directorName + (stat.last ? '' : ', ')}">Director</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p class="empty panel" th:if="${movies.isEmpty()}">No movies found.</p>
+</main>
+</body>
+</html>

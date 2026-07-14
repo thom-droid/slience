@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Playing</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<main class="shell">
+    <div class="topbar">
+        <a class="brand" th:href="@{/}">Silence</a>
+        <nav class="nav">
+            <a th:href="@{/movies}">Movies</a>
+            <a th:href="@{/movies/playing}">Playing</a>
+            <a th:href="@{/reservations/new}">Reserve</a>
+        </nav>
+    </div>
+
+    <h1>Movies playing</h1>
+    <form class="filters" th:action="@{/movies/playing}" method="get">
+        <label>Movie ID
+            <input type="number" name="movieId" min="1" th:value="${movieId}">
+        </label>
+        <label>Date
+            <input type="text" name="date" placeholder="yyyyMMdd" th:value="${date}">
+        </label>
+        <button class="button primary" type="submit">Search</button>
+    </form>
+
+    <section class="panel" th:each="movie : ${movies}">
+        <h2>
+            <a th:href="@{/movies/{id}(id=${movie.movieId})}" th:text="${movie.movieNm}">Movie</a>
+        </h2>
+        <p class="muted" th:text="${movie.movieCd}">Movie code</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Screen</th>
+                    <th>Schedule</th>
+                    <th>Time</th>
+                    <th>Seats</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="screen : ${movie.screens}">
+                    <tr th:each="schedule : ${screen.schedules}">
+                        <td th:text="${screen.name}">Screen</td>
+                        <td><a th:href="@{/schedules/{id}(id=${schedule.scheduleId})}" th:text="${schedule.scheduleId}">1</a></td>
+                        <td>
+                            <span th:text="${#temporals.format(schedule.startDateTime, 'yyyy-MM-dd HH:mm')}">Start</span>
+                            <span> - </span>
+                            <span th:text="${#temporals.format(schedule.endDateTime, 'HH:mm')}">End</span>
+                        </td>
+                        <td>
+                            <span th:text="${schedule.seatsLeft + ' / ' + schedule.totalSeats}">0 / 0</span>
+                            <span class="badge" th:if="${schedule.bookedOut}">Booked out</span>
+                        </td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <p class="empty panel" th:if="${movies.isEmpty()}">No showtimes found.</p>
+</main>
+</body>
+</html>

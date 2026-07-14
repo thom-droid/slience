@@ -16,15 +16,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
-        name = "seat_allocatios",
+        name = "seat_allocations",
         indexes = {
                 @Index(
                         name = "idx_seat_allocation_reservation",
                         columnList = "reservation_id"
-                ),
-                @Index(
-                        name = "idx_seat_allocation_expires_at",
-                        columnList = "expires_at"
                 )
         }
 )

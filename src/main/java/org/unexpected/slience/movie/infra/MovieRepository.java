@@ -43,7 +43,6 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
                     movie_nm = EXCLUDED.movie_nm,
                     release_date = EXCLUDED.release_date,
                     prdt_stat_nm = EXCLUDED.prdt_stat_nm,
-                    show_time = EXCLUDED.show_time,
                     status = EXCLUDED.status
             """,
             nativeQuery = true)
@@ -134,8 +133,8 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
                             di.name
                     )
                     from MovieEntity m
-                    join m.directors d
-                    join d.director di
+                    left join m.directors d
+                    left join d.director di
                     where m.id = :id
             """)
     List<MovieDetailFlatDto> findMovieDetailById(Long id);

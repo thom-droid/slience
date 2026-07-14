@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reservation</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<main class="shell">
+    <div class="topbar">
+        <a class="brand" th:href="@{/}">Silence</a>
+        <nav class="nav">
+            <a th:href="@{/movies}">Movies</a>
+            <a th:href="@{/movies/playing}">Playing</a>
+            <a th:href="@{/reservations/new}">Reserve</a>
+        </nav>
+    </div>
+
+    <section class="panel">
+        <h1>Reservation created</h1>
+        <div class="meta">
+            <div><strong>Reservation ID</strong><br><span th:text="${reservation.reservationId}">1</span></div>
+            <div><strong>Status</strong><br><span class="badge" th:text="${reservation.status}">Status</span></div>
+            <div><strong>Movie</strong><br><span th:text="${reservation.movieTitle}">Movie</span></div>
+            <div><strong>Screen</strong><br><span th:text="${reservation.screenName}">Screen</span></div>
+            <div><strong>Schedule ID</strong><br><span th:text="${reservation.scheduleId}">1</span></div>
+            <div><strong>Seats</strong><br><span th:text="${reservation.seatInfo}">A1</span></div>
+            <div><strong>Starts</strong><br><span th:text="${reservation.startDateTime}">Start</span></div>
+            <div><strong>Expires</strong><br><span th:text="${reservation.expiresAt}">Expires</span></div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

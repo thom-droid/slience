@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New reservation</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<main class="shell">
+    <div class="topbar">
+        <a class="brand" th:href="@{/}">Silence</a>
+        <nav class="nav">
+            <a th:href="@{/movies}">Movies</a>
+            <a th:href="@{/movies/playing}">Playing</a>
+            <a th:href="@{/reservations/new}">Reserve</a>
+        </nav>
+    </div>
+
+    <section class="panel">
+        <h1>Create reservation</h1>
+        <form class="filters" th:action="@{/reservations}" th:object="${reservationForm}" method="post">
+            <label>Movie ID
+                <input type="number" min="1" th:field="*{movieId}">
+            </label>
+            <label>Schedule ID
+                <input type="number" min="1" th:field="*{scheduleId}">
+            </label>
+            <label>Seat IDs
+                <input type="text" th:field="*{seatIds}" placeholder="1, 2, 3">
+            </label>
+            <button class="button primary" type="submit">Reserve</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

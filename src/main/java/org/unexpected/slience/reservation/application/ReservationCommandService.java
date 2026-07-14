@@ -57,13 +57,6 @@ public class ReservationCommandService {
         reservationEntity.setCreatedAt(LocalDateTime.now());
         reservationEntity.setExpiresAt(LocalDateTime.now().plusMinutes(15L));
 
-        List<SeatAllocationEntity> list = sc.stream()
-                .map(s ->
-                        new SeatAllocationEntity(s, reservationEntity, LocalDateTime.now()))
-                .toList();
-
-        seatAllocationRepository.saveAll(list);
-
         List<ReservationScheduleSeatEntity> rssEntityList = sc.stream()
                 .map(s -> {
                     ReservationScheduleSeatEntity rss = new ReservationScheduleSeatEntity();
@@ -72,8 +65,17 @@ public class ReservationCommandService {
                 })
                 .toList();
 
-        reservationEntity.setReservationScheduleSeats(rssEntityList);
+        reservationEntity.addReservationScheduleSeatList(rssEntityList);
 
-        return reservationRepository.save(reservationEntity);
+        ReservationEntity savedReservation = reservationRepository.save(reservationEntity);
+
+        List<SeatAllocationEntity> list = sc.stream()
+                .map(s ->
+                        new SeatAllocationEntity(s, savedReservation, LocalDateTime.now()))
+                .toList();
+
+        seatAllocationRepository.saveAll(list);
+
+        return savedReservation;
     }
 }

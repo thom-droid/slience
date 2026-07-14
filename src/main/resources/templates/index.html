@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Silence</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<main class="shell">
+    <div class="topbar">
+        <a class="brand" th:href="@{/}">Silence</a>
+        <nav class="nav">
+            <a th:href="@{/movies}">Movies</a>
+            <a th:href="@{/movies/playing}">Playing</a>
+            <a th:href="@{/reservations/new}">Reserve</a>
+        </nav>
+    </div>
+
+    <section class="panel">
+        <h1>Movie booking views</h1>
+        <p class="muted">Simple Thymeleaf pages for browsing movies, schedules, seats, and creating reservations.</p>
+        <div class="grid">
+            <a class="button" th:href="@{/movies}">Movie list</a>
+            <a class="button" th:href="@{/movies/playing}">Movies playing by date</a>
+            <a class="button" th:href="@{/reservations/new}">Create reservation</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -48,6 +48,12 @@ public class ReservationEntity {
         }
     }
 
+    public void addReservationScheduleSeatList(List<ReservationScheduleSeatEntity> reservationScheduleSeats) {
+        for (ReservationScheduleSeatEntity reservationScheduleSeat : reservationScheduleSeats) {
+            addReservationScheduleSeat(reservationScheduleSeat);
+        }
+    }
+
     public void removeReservationScheduleSeat(ReservationScheduleSeatEntity reservationScheduleSeat) {
         this.reservationScheduleSeats.remove(reservationScheduleSeat);
     }

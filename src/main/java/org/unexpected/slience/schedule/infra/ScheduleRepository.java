@@ -42,24 +42,45 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     sc.id as screen_id,
                     sc.total_seats,
                     m2.show_time
-                FROM (SELECT m1.id, m1.release_date, m1.show_time
-                        FROM movies m1
-                        WHERE m1.status = 'PLAYING'
-                        AND NOT EXISTS (SELECT 1 FROM schedules s WHERE s.movie_id = m1.id)) m2
+                FROM (
+                    SELECT
+                        m1.id,
+                        m1.release_date,
+                        m1.show_time,
+                        row_number() over (order by m1.id) - 1 as movie_idx
+                    FROM movies m1
+                    WHERE m1.status = 'PLAYING'
+                    AND NOT EXISTS (SELECT 1 FROM schedules s WHERE s.movie_id = m1.id)
+                ) m2
                 CROSS JOIN (
                     SELECT d AS day_offset, s AS slot_offset
                     FROM GENERATE_SERIES(0, 4) d,   -- 5 days
                          GENERATE_SERIES(0, 4) s    -- 5 schedules per day
                 ) gs
-                CROSS JOIN LATERAL (
-                    SELECT id, total_seats
+                JOIN (
+                    SELECT
+                        id,
+                        total_seats,
+                        row_number() over (order by id) - 1 as screen_idx,
+                        count(*) over () as screen_count
                     FROM screens
-                    ORDER BY RANDOM()
-                    LIMIT 1
-                ) sc
+                ) sc ON sc.screen_idx = ((m2.movie_idx + gs.day_offset + gs.slot_offset) % sc.screen_count)
             ) m
             """, nativeQuery = true)
     int syncSchedules();
+
+    @Modifying
+    @Query(value = """
+            INSERT INTO schedule_seats (schedule_id, seat_id)
+            SELECT
+                sch.id,
+                st.id
+            FROM schedules sch
+            JOIN seats st ON st.screen_id = sch.screen_id
+            ON CONFLICT (schedule_id, seat_id)
+            DO NOTHING
+            """, nativeQuery = true)
+    int syncScheduleSeats();
 
     @Query(value = """
                 select new org.unexpected.slience.schedule.api.response.ScheduleFlatRow(
@@ -100,8 +121,8 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     )
                 from ScheduleEntity sch
                 join sch.movie m
-                join m.directors d
-                join d.director di
+                left join m.directors d
+                left join d.director di
                 join sch.screen scr
                 join scr.seats s
                 where sch.id = :scheduleId
@@ -118,7 +139,6 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                 and sc.schedule.movie.status = org.unexpected.slience.movie.domain.entity.Status.PLAYING
                 order by sc.id
             """)
-
     List<ScheduleSeatEntity> findScheduleSeatForUpdate(@Param("movieId") Long movieId,
                                                        @Param("scheduleId") Long scheduleId,
                                                        @Param("seatIds") Collection<Long> seatIds);
@@ -129,9 +149,6 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     (select 1
                     from SeatAllocationEntity sa
                     where sa.scheduleSeatId in :scheduleSeatIds
-                    and sa.reservation.status in (
-                                org.unexpected.slience.reservation.domain.Status.PAID,
-                                org.unexpected.slience.reservation.domain.Status.RESERVED)
                     )
             """)
     boolean existsAllocatedSeat(Collection<Long> scheduleSeatIds);

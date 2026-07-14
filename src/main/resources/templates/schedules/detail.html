@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schedule detail</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<main class="shell">
+    <div class="topbar">
+        <a class="brand" th:href="@{/}">Silence</a>
+        <nav class="nav">
+            <a th:href="@{/movies}">Movies</a>
+            <a th:href="@{/movies/playing}">Playing</a>
+            <a th:href="@{/reservations/new}">Reserve</a>
+        </nav>
+    </div>
+
+    <section class="panel">
+        <h1 th:text="${scheduleDetail.movieDetail.movieNm}">Movie</h1>
+        <p class="muted" th:text="${scheduleDetail.screen.name}">Screen</p>
+        <div class="meta">
+            <div><strong>Schedule ID</strong><br><span th:text="${scheduleDetail.schedule.scheduleId}">1</span></div>
+            <div><strong>Movie ID</strong><br><span th:text="${scheduleDetail.movieDetail.movieId}">1</span></div>
+            <div><strong>Screen ID</strong><br><span th:text="${scheduleDetail.screen.screenId}">1</span></div>
+            <div>
+                <strong>Time</strong><br>
+                <span th:text="${#temporals.format(scheduleDetail.schedule.startDateTime, 'yyyy-MM-dd HH:mm')}">Start</span>
+                <span> - </span>
+                <span th:text="${#temporals.format(scheduleDetail.schedule.endDateTime, 'HH:mm')}">End</span>
+            </div>
+            <div><strong>Seats left</strong><br><span th:text="${scheduleDetail.schedule.seatsLeft + ' / ' + scheduleDetail.schedule.totalSeats}">0 / 0</span></div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="seat-header">
+            <h2>Choose seats</h2>
+            <div class="seat-legend" aria-label="Seat legend">
+                <span><i class="legend-seat open"></i>Open</span>
+                <span><i class="legend-seat selected"></i>Selected</span>
+                <span><i class="legend-seat booked"></i>Booked</span>
+            </div>
+        </div>
+
+        <form class="booking-form" th:action="@{/reservations}" method="post">
+            <input type="hidden" name="movieId" th:value="${scheduleDetail.movieDetail.movieId}">
+            <input type="hidden" name="scheduleId" th:value="${scheduleDetail.schedule.scheduleId}">
+            <input type="hidden" id="selectedSeatIds" name="seatIds">
+
+            <div class="screen-line" aria-hidden="true">Screen</div>
+
+            <div class="seat-grid booking-grid" role="group" aria-label="Available seats">
+                <button th:each="seat : ${scheduleDetail.seats}"
+                        type="button"
+                        class="seat seat-button"
+                        th:classappend="${seat.booked} ? ' booked'"
+                        th:data-seat-id="${seat.id}"
+                        th:data-seat-label="${seat.seatRow + seat.seatNumber}"
+                        th:disabled="${seat.booked}"
+                        th:attr="aria-pressed=false,aria-label=${seat.seatRow + seat.seatNumber + (seat.booked ? ' booked' : ' open')}"
+                        th:title="${seat.booked ? 'Booked' : 'Select ' + seat.seatRow + seat.seatNumber}">
+                    <strong th:text="${seat.seatRow + seat.seatNumber}">A1</strong>
+                    <span th:text="${seat.booked ? 'Booked' : 'Open'}">Open</span>
+                </button>
+            </div>
+
+            <div class="booking-bar">
+                <div>
+                    <strong id="selectedSeatCount">0 seats selected</strong>
+                    <div class="muted" id="selectedSeatLabels">Select one or more open seats.</div>
+                </div>
+                <button class="button primary" id="reserveButton" type="submit" disabled>Reserve selected seats</button>
+            </div>
+        </form>
+    </section>
+</main>
+<script>
+    (() => {
+        const selected = new Map();
+        const seatInput = document.querySelector("#selectedSeatIds");
+        const countEl = document.querySelector("#selectedSeatCount");
+        const labelsEl = document.querySelector("#selectedSeatLabels");
+        const reserveButton = document.querySelector("#reserveButton");
+        const seats = document.querySelectorAll(".seat-button:not(:disabled)");
+
+        const renderSelection = () => {
+            const labels = [...selected.values()];
+            seatInput.value = [...selected.keys()].join(",");
+            reserveButton.disabled = selected.size === 0;
+            countEl.textContent = `${selected.size} ${selected.size === 1 ? "seat" : "seats"} selected`;
+            labelsEl.textContent = labels.length > 0 ? labels.join(", ") : "Select one or more open seats.";
+        };
+
+        seats.forEach((seat) => {
+            seat.addEventListener("click", () => {
+                const id = seat.dataset.seatId;
+                const label = seat.dataset.seatLabel;
+
+                if (selected.has(id)) {
+                    selected.delete(id);
+                    seat.classList.remove("selected");
+                    seat.setAttribute("aria-pressed", "false");
+                    return renderSelection();
+                }
+
+                selected.set(id, label);
+                seat.classList.add("selected");
+                seat.setAttribute("aria-pressed", "true");
+                renderSelection();
+            });
+        });
+
+        renderSelection();
+    })();
+</script>
+</body>
+</html>

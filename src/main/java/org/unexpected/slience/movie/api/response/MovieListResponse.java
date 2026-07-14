@@ -7,7 +7,8 @@ import org.unexpected.slience.util.DateUtil;
 
 import java.util.List;
 
-public record MovieListResponse(String movieCd,
+public record MovieListResponse(Long movieId,
+                                String movieCd,
                                 String movieNm,
                                 String movieNmEn,
                                 String releaseDate,
@@ -25,6 +26,7 @@ public record MovieListResponse(String movieCd,
                 .toList();
 
         return new MovieListResponse(
+                entity.getId(),
                 entity.getMovieCd(),
                 entity.getMovieNm(),
                 entity.getMovieNmEn(),

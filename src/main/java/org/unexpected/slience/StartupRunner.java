@@ -19,8 +19,11 @@ public class StartupRunner {
     // 스프링 준비되면 동기화 실시
     @EventListener(ApplicationReadyEvent.class)
     public void initMovie() {
-        log.info("list={}", env.getProperty("kobis.api.path.list"));
-        log.info("detail={}", env.getProperty("kobis.api.path.detail"));
-        kobisMovieSyncFacade.sync();
+        String syncMovies = System.getProperty("syncMovies");
+        if ("Y".equalsIgnoreCase(syncMovies)) {
+            log.info("list={}", env.getProperty("kobis.api.path.list"));
+            log.info("detail={}", env.getProperty("kobis.api.path.detail"));
+            kobisMovieSyncFacade.sync();
+        }
     }
 }

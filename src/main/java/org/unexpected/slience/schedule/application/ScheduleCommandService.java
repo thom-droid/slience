@@ -13,6 +13,8 @@ public class ScheduleCommandService {
 
     @Transactional
     public int syncSchedules() {
-        return scheduleRepository.syncSchedules();
+        int syncedSchedules = scheduleRepository.syncSchedules();
+        scheduleRepository.syncScheduleSeats();
+        return syncedSchedules;
     }
 }

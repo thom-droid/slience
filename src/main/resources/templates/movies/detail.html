@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${movie.movieNm}">Movie detail</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<main class="shell">
+    <div class="topbar">
+        <a class="brand" th:href="@{/}">Silence</a>
+        <nav class="nav">
+            <a th:href="@{/movies}">Movies</a>
+            <a th:href="@{/movies/playing(movieId=${movie.movieId})}">Showtimes</a>
+            <a th:href="@{/reservations/new}">Reserve</a>
+        </nav>
+    </div>
+
+    <section class="panel">
+        <h1 th:text="${movie.movieNm}">Movie title</h1>
+        <p class="muted" th:text="${movie.movieNmEn}">English title</p>
+        <div class="meta">
+            <div><strong>Movie ID</strong><br><span th:text="${movie.movieId}">1</span></div>
+            <div><strong>Movie code</strong><br><span th:text="${movie.movieCd}">Code</span></div>
+            <div><strong>Release date</strong><br><span th:text="${movie.releaseDate}">Date</span></div>
+            <div><strong>Runtime</strong><br><span th:text="${movie.showTime}">Runtime</span></div>
+            <div><strong>Status</strong><br><span class="badge" th:text="${movie.status}">Status</span></div>
+            <div><strong>Genre</strong><br><span th:text="${movie.repGenreNm}">Genre</span></div>
+            <div><strong>Nation</strong><br><span th:text="${movie.repNationNm}">Nation</span></div>
+            <div><strong>Type</strong><br><span th:text="${movie.typeNm}">Type</span></div>
+            <div><strong>Adult only</strong><br><span th:text="${movie.adultYn ? 'Yes' : 'No'}">No</span></div>
+        </div>
+        <h2>Directors</h2>
+        <p>
+            <span th:each="director, stat : ${movie.directorNms}"
+                  th:text="${director + (stat.last ? '' : ', ')}">Director</span>
+        </p>
+    </section>
+</main>
+</body>
+</html>
