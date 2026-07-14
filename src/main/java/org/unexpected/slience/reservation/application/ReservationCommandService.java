@@ -52,7 +52,6 @@ public class ReservationCommandService {
 
         // 예약 없는 경우 예약 진행
         ReservationEntity reservationEntity = new ReservationEntity();
-        reservationEntity.addUser(user);
         reservationEntity.setStatus(Status.BEFORE_PAYMENT);
         reservationEntity.setCreatedAt(LocalDateTime.now());
         reservationEntity.setExpiresAt(LocalDateTime.now().plusMinutes(15L));
@@ -65,6 +64,8 @@ public class ReservationCommandService {
                 })
                 .toList();
 
+        // add relation
+        reservationEntity.addUser(user);
         reservationEntity.addReservationScheduleSeatList(rssEntityList);
 
         ReservationEntity savedReservation = reservationRepository.save(reservationEntity);
@@ -75,6 +76,13 @@ public class ReservationCommandService {
                 .toList();
 
         seatAllocationRepository.saveAll(list);
+
+        // update seats left
+        int updated = scheduleRepository.updateSeatLeft(scheduleId, list.size());
+
+        if (updated != list.size()) {
+
+        }
 
         return savedReservation;
     }

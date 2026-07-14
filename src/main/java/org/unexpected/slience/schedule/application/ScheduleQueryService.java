@@ -23,6 +23,7 @@ public class ScheduleQueryService {
         if (scheduleDetailFlatRows.isEmpty()) throw new NoScheduleFoundException(scheduleId);
 
         Map<Long, ScheduleDetailResponse> schedule = new LinkedHashMap<>();
+        Set<Long> addedSeatIds = new HashSet<>();
         for (ScheduleFlatRow r : scheduleDetailFlatRows) {
 
             ScheduleDetailResponse res = schedule.computeIfAbsent(
@@ -60,16 +61,20 @@ public class ScheduleQueryService {
                             )
             );
 
-            res.movieDetail().directorNms().add(r.directorNm());
+            if (r.directorNm() != null) {
+                res.movieDetail().directorNms().add(r.directorNm());
+            }
 
-            res.seats().add(
-                    new ScheduleDetailResponse.Seat(
-                            r.seatId(),
-                            r.seatRow(),
-                            r.seatNumber(),
-                            r.booked()
-                    )
-            );
+            if (addedSeatIds.add(r.seatId())) {
+                res.seats().add(
+                        new ScheduleDetailResponse.Seat(
+                                r.seatId(),
+                                r.seatRow(),
+                                r.seatNumber(),
+                                r.booked()
+                        )
+                );
+            }
         }
         return schedule.get(scheduleId);
     }

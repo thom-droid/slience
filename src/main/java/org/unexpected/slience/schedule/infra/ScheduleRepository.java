@@ -108,24 +108,24 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     s.id,
                     s.seatRow,
                     s.seatNumber,
-                    case when exists (
-                        select sa.scheduleSeatId
-                        from SeatAllocationEntity sa
-                        where sa.scheduleSeat.schedule = sch
-                        and sa.reservation.status IN (
-                            org.unexpected.slience.reservation.domain.Status.RESERVED,
-                            org.unexpected.slience.reservation.domain.Status.PAID
-                            )
-                        )
-                    then true else false end
+                    case when sa.scheduleSeatId is not null then true else false end
                     )
-                from ScheduleEntity sch
+                from ScheduleSeatEntity schs
+                join schs.schedule sch
                 join sch.movie m
                 left join m.directors d
                 left join d.director di
                 join sch.screen scr
-                join scr.seats s
-                where sch.id = :scheduleId
+                join schs.seat s
+                left join SeatAllocationEntity sa
+                    on sa.scheduleSeat = schs
+                    and sa.reservation.status IN (
+                            org.unexpected.slience.reservation.domain.Status.BEFORE_PAYMENT,
+                            org.unexpected.slience.reservation.domain.Status.RESERVED,
+                            org.unexpected.slience.reservation.domain.Status.PAID
+                        )
+                where schs.schedule.id = :scheduleId
+                order by s.seatRow, s.seatNumber
             """)
     List<ScheduleFlatRow> findScheduleDetail(@Param("scheduleId") Long scheduleId);
 
@@ -152,4 +152,13 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     )
             """)
     boolean existsAllocatedSeat(Collection<Long> scheduleSeatIds);
+
+    @Modifying
+    @Query("""
+        update ScheduleEntity sc 
+        set sc.seatsLeft = sc.seatsLeft - :seatCount
+        where sc.id = :scheduleId
+        and sc.seatsLeft >= :seatCount                         
+        """)
+    int updateSeatLeft(Long scheduleId, int seatCount);
 }

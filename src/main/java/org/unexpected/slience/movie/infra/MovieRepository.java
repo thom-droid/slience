@@ -11,7 +11,6 @@ import org.unexpected.slience.movie.api.response.MovieScheduleFlatRow;
 import org.unexpected.slience.movie.domain.entity.MovieEntity;
 import org.unexpected.slience.movie.domain.entity.Status;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -87,6 +86,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
             select m
             from MovieEntity m
             where (:status is null or m.status = :status)
+            order by m.releaseDate desc
             """)
     List<MovieEntity> findMoviesByStatus(@Param("status") Status status,
                                          Pageable pageRequest);
@@ -112,6 +112,7 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
               and (:movieId is null or m.id = :movieId)
               and sch.startTime >= :startDateTime
               and sch.startTime <  :endDateTime
+            order by m.releaseDate desc
             """)
     List<MovieScheduleFlatRow> findMoviesByDate(@Param("movieId") Long movieId,
                                                 @Param("startDateTime") LocalDateTime startDateTime,
