@@ -23,5 +23,8 @@ spring:
       data-locations: classpath*:init/*.sql
 logging:
   level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.bind: OFF
+    org.hibernate.SQL: WARN
+    org.springframework.jdbc.core: DEBUG
+    org.springframework.jdbc.core.JdbcTemplate: DEBUG
+    org.springframework.jdbc.core.StatementCreatorUtils: TRACE

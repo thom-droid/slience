@@ -3,7 +3,7 @@ package org.unexpected.slience.kobis.infra;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.unexpected.slience.kobis.api.request.MovieTempUpdateDto;
+import org.unexpected.slience.kobis.api.request.KobisMovieDetailUpdateDto;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 public class MovieTempBulkRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public int bulkUpdate(Long batchId, List<MovieTempUpdateDto> updates) {
+    public int bulkUpdate(Long batchId, List<KobisMovieDetailUpdateDto> updates) {
 
         String sql = """
                 UPDATE movie_temps

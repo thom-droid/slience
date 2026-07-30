@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.unexpected.slience.kobis.api.request.MovieTempUpdateDto;
-import org.unexpected.slience.kobis.infra.MovieTempBulkRepository;
 import org.unexpected.slience.movie.infra.DirectorRepository;
 import org.unexpected.slience.movie.infra.MovieRepository;
 import org.unexpected.slience.kobis.domain.entity.DirectorTempEntity;
@@ -27,10 +25,9 @@ public class MovieTempCommandService {
     private final DirectorTempRepository directorTempRepository;
     private final MovieRepository movieRepository;
     private final DirectorRepository directorRepository;
-    private final MovieTempBulkRepository movieTempBulkRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public int insertKobisMovie(Long batchId, KobisMovieListResponse movieListResponse) {
+    public int insertNewKobisMovie(Long batchId, KobisMovieListResponse movieListResponse) {
 
         List<KobisMovieDto> movieList = movieListResponse.getMovieListResult().getMovieList();
 
@@ -63,8 +60,8 @@ public class MovieTempCommandService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public int upsertKobisMovie(Long batchId) {
-        int inserted = movieRepository.mergeMovies(batchId);
+    public int insertNewMoviesAndDirectors(Long batchId) {
+        int inserted = movieRepository.insertNewMovies(batchId);
         directorRepository.mergeDirector(batchId);
         movieRepository.mergeMovieDirectors(batchId);
         return inserted;
@@ -74,13 +71,6 @@ public class MovieTempCommandService {
     public int cleanup(Long batchId) {
         int i = movieTempRepository.deleteByBatchId(batchId);
         directorTempRepository.deleteByBatchId(batchId);
-
-        return i;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public int updateMovieDetails(Long batchId, List<MovieTempUpdateDto> updates) {
-        int i = movieTempBulkRepository.bulkUpdate(batchId, updates);
         return i;
     }
 }

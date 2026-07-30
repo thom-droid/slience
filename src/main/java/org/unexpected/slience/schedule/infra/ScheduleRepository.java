@@ -51,6 +51,7 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
                     FROM movies m1
                     WHERE m1.status = 'PLAYING'
                     AND NOT EXISTS (SELECT 1 FROM schedules s WHERE s.movie_id = m1.id)
+                    AND m1.show_time is not null
                 ) m2
                 CROSS JOIN (
                     SELECT d AS day_offset, s AS slot_offset

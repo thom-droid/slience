@@ -13,6 +13,7 @@ import org.unexpected.slience.movie.domain.entity.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
@@ -21,13 +22,13 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
     @Query(value = """
                 INSERT INTO movies (movie_cd, movie_nm, movie_nm_en, release_date,
                                     prdt_stat_nm, status, rep_genre_nm, rep_nation_nm,
-                                    type_nm, adult_yn, show_time)
+                                    type_nm, adult_yn, show_time, created_date)
                 SELECT t.movie_cd, t.movie_nm, t.movie_nm_en, to_date(t.release_date, 'YYYYMMDD'),
                        t.prdt_stat_nm, CASE WHEN to_date(t.release_date, 'YYYYMMDD') + INTERVAL '30 DAYS' < CURRENT_DATE
                                             THEN 'CLOSED'
                                             ELSE s.status
                                        END AS status,
-                       t.rep_genre_nm, t.rep_nation_nm, t.type_nm, t.adult_yn, show_time
+                       t.rep_genre_nm, t.rep_nation_nm, t.type_nm, t.adult_yn, show_time, CURRENT_DATE
                 FROM movie_temps t
                 LEFT JOIN (SELECT 'PLAYING' AS status, '개봉' AS prdt_stat_nm
                                 UNION ALL
@@ -40,30 +41,11 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
                 ON CONFLICT (movie_cd)
                 DO UPDATE set
                     movie_nm = EXCLUDED.movie_nm,
-                    release_date = EXCLUDED.release_date,
                     prdt_stat_nm = EXCLUDED.prdt_stat_nm,
                     status = EXCLUDED.status
             """,
             nativeQuery = true)
     int mergeMovies(Long batchId);
-
-    @Modifying
-    @Query(value = """
-                INSERT INTO movie_directors (director_id, movie_id)
-            
-                SELECT d.id AS director_id,
-                       m.id AS movie_id
-                FROM directors_temp t
-            
-                JOIN movies m ON m.movie_cd = t.movie_cd
-                JOIN directors d ON d.name = t.name
-                WHERE t.batch_id = :batchId
-            
-                ON CONFLICT (movie_id, director_id)
-                DO NOTHING;
-            """,
-            nativeQuery = true)
-    int mergeMovieDirectors(@Param(value = "batchId") Long batchId);
 
     @Query(value = """
             select m
@@ -139,4 +121,50 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
                     where m.id = :id
             """)
     List<MovieDetailFlatDto> findMovieDetailById(Long id);
+
+    @Modifying
+    @Query(value = """
+                INSERT INTO movie_directors (director_id, movie_id)
+            
+                SELECT d.id AS director_id,
+                       m.id AS movie_id
+                FROM directors_temp t
+            
+                JOIN movies m ON m.movie_cd = t.movie_cd
+                JOIN directors d ON d.name = t.name
+                WHERE t.batch_id = :batchId
+            
+                ON CONFLICT (movie_id, director_id)
+                DO NOTHING;
+            """,
+            nativeQuery = true)
+    int mergeMovieDirectors(@Param(value = "batchId") Long batchId);
+
+    @Modifying
+    @Query(value = """
+                INSERT INTO movies (movie_cd, movie_nm, movie_nm_en, status, release_date,
+                                    prdt_stat_nm, rep_genre_nm, rep_nation_nm, type_nm, created_date)
+                    SELECT  t.movie_cd, t.movie_nm, t.movie_nm_en, s.status, t.release_date::date,
+                            t.prdt_stat_nm, t.rep_genre_nm, t.rep_nation_nm, t.type_nm, CURRENT_DATE
+                    FROM    movie_temps t
+            
+                    LEFT JOIN ( SELECT 'PLAYING' AS status, '개봉' AS prdt_stat_nm
+                                    UNION ALL
+                                SELECT 'COMING_SOON', '개봉예정'
+                                    UNION ALL
+                                SELECT 'CLOSED', '상영종료') s ON t.prdt_stat_nm = s.PRDT_STAT_NM
+
+                    WHERE   t.batch_id = :batchId
+                    AND NOT EXISTS (SELECT 1 FROM movies m WHERE m.movie_cd = t.movie_cd)
+            """, nativeQuery = true)
+    int insertNewMovies(@Param("batchId") Long batchId);
+
+    @Query(value = """
+            SELECT  movie_cd
+            FROM    movies m
+            WHERE   synced = false
+            """, nativeQuery = true)
+    Set<String> findMoviesWithoutDetail();
+
+
 }

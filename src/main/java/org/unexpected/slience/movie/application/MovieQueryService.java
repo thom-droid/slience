@@ -25,6 +25,10 @@ public class MovieQueryService {
 
     private final MovieRepository movieRepository;
 
+    public Set<String> findMoviesWithoutDetail() {
+        return movieRepository.findMoviesWithoutDetail();
+    }
+
     public List<MovieEntity> getMovies(Status status, String date, int page) {
         PageRequest pageRequest = PageRequest.of(page, 10);
         if (StringUtils.hasText(date)) {

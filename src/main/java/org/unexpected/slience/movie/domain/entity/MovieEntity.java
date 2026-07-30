@@ -2,6 +2,7 @@ package org.unexpected.slience.movie.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.unexpected.slience.config.Auditable;
 import org.unexpected.slience.schedule.domain.entity.ScheduleEntity;
 
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import java.util.List;
         uniqueConstraints = @UniqueConstraint(columnNames = {"movie_cd"}),
         indexes = @Index(columnList = "movie_cd", name="movie_idx_movie_cd")
 )
-public class MovieEntity {
+public class MovieEntity extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,6 +55,12 @@ public class MovieEntity {
 
     @Column(name = "adult_yn")
     private boolean adultYn;
+
+    @Column(name = "restricted")
+    private boolean restricted;
+
+    @Column(name = "synced")
+    private boolean synced;
 
     @Column(name = "show_time")
     private String showTime;

@@ -8,6 +8,7 @@ import org.unexpected.slience.kobis.domain.entity.MovieTempEntity;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface MovieTempRepository extends JpaRepository<MovieTempEntity, Long> {
@@ -27,5 +28,5 @@ public interface MovieTempRepository extends JpaRepository<MovieTempEntity, Long
                 WHERE mt.batch_id = :batchId
                 AND NOT EXISTS(SELECT 1 FROM movies m WHERE m.movie_cd = mt.movie_cd)
             """, nativeQuery = true)
-    List<String> findNewMoviesByBatchId(Long batchId);
+    Set<String> findNewMoviesByBatchId(Long batchId);
 }
